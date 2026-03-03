@@ -78,10 +78,14 @@ app.use((req, res) => {
 
 // Iniciar servidor
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
-  console.log(`📦 Stock endpoint: http://localhost:${PORT}/api/stock`);
-  console.log(`💚 Health check: http://localhost:${PORT}/health`);
+const HOST = '0.0.0.0';
+
+app.listen(PORT, HOST, () => {
+  console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
+  console.log(`📦 Stock endpoint: /api/stock`);
+  console.log(`🎰 Roulette endpoint: /api/roulette`);
+  console.log(`💚 Health check: /health`);
+  console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
 });
 
 module.exports = app;
