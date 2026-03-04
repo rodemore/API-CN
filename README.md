@@ -99,6 +99,119 @@ Obtiene un premio específico por su ID.
 }
 ```
 
+### POST /api/roulette/spin
+
+Lanza la ruleta para determinar si el usuario gana un premio.
+
+**Body:**
+```json
+{
+  "roulette_id": 1
+}
+```
+
+**Respuesta (ganador):**
+```json
+{
+  "success": true,
+  "winner": true,
+  "message": "¡Felicidades! Has ganado un premio",
+  "prize": {
+    "id": 3,
+    "name": "Toalla",
+    "roulette_id": 1,
+    "remainingStock": 49
+  }
+}
+```
+
+**Respuesta (no ganador):**
+```json
+{
+  "success": true,
+  "winner": false,
+  "message": "No ganaste esta vez. ¡Sigue intentando!"
+}
+```
+
+### POST /api/roulette/winner
+
+Registra un ganador en la base de datos.
+
+**Body:**
+```json
+{
+  "user_id": "user123",
+  "prize": "Toalla",
+  "prize_id": 3,
+  "roulette_id": 1
+}
+```
+
+**Respuesta:**
+```json
+{
+  "success": true,
+  "message": "Ganador registrado exitosamente",
+  "data": {
+    "winner_id": "65f1234567890abcdef12345",
+    "user_id": "user123",
+    "prize": "Toalla",
+    "prize_id": 3,
+    "roulette_id": 1,
+    "created_at": "2024-03-04T10:30:00.000Z",
+    "remainingStock": 49
+  }
+}
+```
+
+### GET /api/roulette/stats
+
+Obtiene estadísticas de la ruleta y los premios.
+
+**Respuesta:**
+```json
+{
+  "success": true,
+  "winProbability": "80%",
+  "totalWinners": 25,
+  "prizes": [
+    {
+      "id": 1,
+      "name": "100 ptos",
+      "totalStock": 200,
+      "winners": 10,
+      "available": 190
+    }
+  ]
+}
+```
+
+### GET /api/roulette/winners/download
+
+Descarga todos los ganadores en formato Excel (.xlsx).
+
+Este endpoint devuelve un archivo Excel con todos los ganadores registrados, ordenados por fecha (más recientes primero).
+
+**Columnas del Excel:**
+- ID: ID único del ganador
+- Usuario: ID del usuario ganador
+- Premio: Nombre del premio ganado
+- ID Premio: ID del premio
+- ID Ruleta: ID de la ruleta
+- Fecha y Hora: Fecha y hora del premio (formato México)
+
+**Ejemplo de uso:**
+```bash
+# Descargar desde el navegador
+http://localhost:3000/api/roulette/winners/download
+
+# Descargar con curl
+curl -O -J http://localhost:3000/api/roulette/winners/download
+```
+
+El archivo se descargará con el nombre: `ganadores_YYYYMMDD_HHMM.xlsx`
+
 ## Estructura del Proyecto
 
 ```

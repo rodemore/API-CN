@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const XLSX = require('xlsx');
 const Stock = require('../models/Stock');
 const Winner = require('../models/Winner');
 const { gloria_probability } = require('../config/roulette');
@@ -202,6 +203,81 @@ router.get('/stats', async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Error al obtener estadísticas',
+      error: error.message
+    });
+  }
+});
+
+// GET /api/roulette/winners/download - Download winners as Excel
+router.get('/winners/download', async (req, res) => {
+  try {
+    // Fetch all winners from database, sorted by creation date (newest first)
+    const winners = await Winner.find().sort({ createdAt: -1 });
+
+    if (winners.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'No hay ganadores para descargar'
+      });
+    }
+
+    // Prepare data for Excel
+    const excelData = winners.map(winner => ({
+      'ID': winner._id.toString(),
+      'Usuario': winner.user_id,
+      'Premio': winner.prize,
+      'ID Premio': winner.prize_id,
+      'ID Ruleta': winner.roulette_id,
+      'Fecha y Hora': new Date(winner.createdAt).toLocaleString('es-MX', {
+        timeZone: 'America/Mexico_City',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      })
+    }));
+
+    // Create workbook and worksheet
+    const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.json_to_sheet(excelData);
+
+    // Auto-size columns
+    const columnWidths = [
+      { wch: 25 }, // ID
+      { wch: 15 }, // Usuario
+      { wch: 30 }, // Premio
+      { wch: 12 }, // ID Premio
+      { wch: 12 }, // ID Ruleta
+      { wch: 20 }  // Fecha y Hora
+    ];
+    worksheet['!cols'] = columnWidths;
+
+    // Add worksheet to workbook
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Ganadores');
+
+    // Generate Excel file buffer
+    const excelBuffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+
+    // Generate filename with current date
+    const now = new Date();
+    const filename = `ganadores_${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}.xlsx`;
+
+    // Set headers for file download
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+
+    console.log(`📥 Downloaded ${winners.length} winners as Excel: ${filename}`);
+
+    // Send file
+    res.send(excelBuffer);
+
+  } catch (error) {
+    console.error('Error downloading winners:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error al descargar ganadores',
       error: error.message
     });
   }

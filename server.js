@@ -26,7 +26,8 @@ app.get('/', (req, res) => {
       stockById: '/api/stock/:id - Obtener un premio específico',
       rouletteSpin: '/api/roulette/spin - Lanzar la ruleta',
       rouletteWinner: '/api/roulette/winner - Registrar ganador',
-      rouletteStats: '/api/roulette/stats - Obtener estadísticas'
+      rouletteStats: '/api/roulette/stats - Obtener estadísticas',
+      rouletteDownload: '/api/roulette/winners/download - Descargar ganadores en Excel'
     }
   });
 });
@@ -85,6 +86,7 @@ app.listen(PORT, HOST, () => {
   console.log(`📦 Stock endpoint: /api/stock`);
   console.log(`🎰 Roulette endpoint: /api/roulette`);
   console.log(`💚 Health check: /health`);
+  console.log(`📥 Download winners: /api/roulette/winners/download`);
   console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
 });
 
