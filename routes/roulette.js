@@ -100,10 +100,10 @@ router.post('/spin', async (req, res) => {
   }
 });
 
-// POST /api/roulette/winner - Register winner
+// POST /api/roulette/winner - Register winner or participant
 router.post('/winner', async (req, res) => {
   try {
-    const { user_id, prize, prize_id, roulette_id } = req.body;
+    const { user_id, prize, prize_id, roulette_id, is_winner = true } = req.body;
 
     // Validate required fields
     if (!user_id || !prize || !prize_id || !roulette_id) {
@@ -113,56 +113,69 @@ router.post('/winner', async (req, res) => {
       });
     }
 
-    // Verify prize exists and has available stock
-    const prizeStock = await Stock.findOne({
-      ID_PREMIO: prize_id,
-      ID_RULETA: roulette_id
-    });
+    let prizeStock = null;
+    let availableStock = 0;
 
-    if (!prizeStock) {
-      return res.status(404).json({
-        success: false,
-        message: 'Prize not found'
+    // Solo validar stock si es un ganador real
+    if (is_winner && typeof prize_id === 'number') {
+      // Verify prize exists and has available stock
+      prizeStock = await Stock.findOne({
+        ID_PREMIO: prize_id,
+        ID_RULETA: roulette_id
       });
+
+      if (!prizeStock) {
+        return res.status(404).json({
+          success: false,
+          message: 'Prize not found'
+        });
+      }
+
+      availableStock = prizeStock.Stock - prizeStock.GANADORES;
+      if (availableStock <= 0) {
+        return res.status(400).json({
+          success: false,
+          message: 'No hay stock disponible para este premio'
+        });
+      }
     }
 
-    const availableStock = prizeStock.Stock - prizeStock.GANADORES;
-    if (availableStock <= 0) {
-      return res.status(400).json({
-        success: false,
-        message: 'No hay stock disponible para este premio'
-      });
-    }
-
-    // Create winner record
+    // Create winner/participant record
     const winner = new Winner({
       user_id,
       prize,
       prize_id,
-      roulette_id
+      roulette_id,
+      is_winner
     });
 
     await winner.save();
 
-    // Increment winners counter in Stock
-    await Stock.findOneAndUpdate(
-      { ID_PREMIO: prize_id, ID_RULETA: roulette_id },
-      { $inc: { GANADORES: 1 } }
-    );
+    // Increment winners counter in Stock only if is a real winner
+    if (is_winner && prizeStock) {
+      await Stock.findOneAndUpdate(
+        { ID_PREMIO: prize_id, ID_RULETA: roulette_id },
+        { $inc: { GANADORES: 1 } }
+      );
+    }
 
-    console.log(`🎉 Winner registered: ${user_id} won ${prize}`);
+    const logMessage = is_winner
+      ? `🎉 Winner registered: ${user_id} won ${prize}`
+      : `📝 Participant registered: ${user_id} - ${prize}`;
+    console.log(logMessage);
 
     res.json({
       success: true,
-      message: 'Ganador registrado exitosamente',
+      message: is_winner ? 'Ganador registrado exitosamente' : 'Participación registrada exitosamente',
       data: {
         winner_id: winner._id,
         user_id: winner.user_id,
         prize: winner.prize,
         prize_id: winner.prize_id,
         roulette_id: winner.roulette_id,
+        is_winner: winner.is_winner,
         created_at: winner.createdAt,
-        remainingStock: availableStock - 1
+        remainingStock: prizeStock ? availableStock - 1 : null
       }
     });
 
@@ -228,6 +241,7 @@ router.get('/winners/download', async (req, res) => {
       'Premio': winner.prize,
       'ID Premio': winner.prize_id,
       'ID Ruleta': winner.roulette_id,
+      'Ganador': winner.is_winner !== false ? 'Sí' : 'No', // Por compatibilidad con registros antiguos
       'Fecha y Hora': new Date(winner.createdAt).toLocaleString('es-MX', {
         timeZone: 'America/Mexico_City',
         year: 'numeric',
@@ -250,6 +264,7 @@ router.get('/winners/download', async (req, res) => {
       { wch: 30 }, // Premio
       { wch: 12 }, // ID Premio
       { wch: 12 }, // ID Ruleta
+      { wch: 10 }, // Ganador
       { wch: 20 }  // Fecha y Hora
     ];
     worksheet['!cols'] = columnWidths;
