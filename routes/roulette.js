@@ -224,8 +224,8 @@ router.get('/stats', async (req, res) => {
 // GET /api/roulette/winners/download - Download winners as Excel
 router.get('/winners/download', async (req, res) => {
   try {
-    // Fetch all winners from database, sorted by creation date (newest first)
-    const winners = await Winner.find().sort({ createdAt: -1 });
+    // Fetch only roulette winners (roulette_id: 1) from database, sorted by creation date (newest first)
+    const winners = await Winner.find({ roulette_id: 1 }).sort({ createdAt: -1 });
 
     if (winners.length === 0) {
       return res.status(404).json({
