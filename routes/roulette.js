@@ -3,7 +3,7 @@ const router = express.Router();
 const XLSX = require('xlsx');
 const Stock = require('../models/Stock');
 const Winner = require('../models/Winner');
-const { gloria_probability } = require('../config/roulette');
+const { roulette_probability } = require('../config/roulette');
 
 // POST /api/roulette/spin - Simulate roulette spin
 router.post('/spin', async (req, res) => {
@@ -22,10 +22,10 @@ router.post('/spin', async (req, res) => {
     const random = Math.random();
 
     console.log(`🎲 Generated probability: ${(random * 100).toFixed(2)}%`);
-    console.log(`🎯 Win probability: ${(gloria_probability * 100).toFixed(2)}%`);
+    console.log(`🎯 Win probability: ${(roulette_probability * 100).toFixed(2)}%`);
 
     // Check if wins according to probability
-    if (random > gloria_probability) {
+    if (random > roulette_probability) {
       // Didn't win
       return res.json({
         success: true,
@@ -206,7 +206,7 @@ router.get('/stats', async (req, res) => {
 
     res.json({
       success: true,
-      winProbability: `${(gloria_probability * 100)}%`,
+      winProbability: `${(roulette_probability * 100)}%`,
       totalWinners,
       prizes: stats
     });
