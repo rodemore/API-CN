@@ -5,6 +5,7 @@ const connectDB = require('./config/database');
 const stockRoutes = require('./routes/stock');
 const rouletteRoutes = require('./routes/roulette');
 const dominoRoutes = require('./routes/domino');
+const albumRoutes = require('./routes/album');
 
 const app = express();
 
@@ -32,7 +33,11 @@ app.get('/', (req, res) => {
       dominoSpin: '/api/domino/spin - Lanzar el dominó',
       dominoWinner: '/api/domino/winner - Registrar ganador de dominó',
       dominoStats: '/api/domino/stats - Obtener estadísticas de dominó',
-      dominoDownload: '/api/domino/winners/download - Descargar ganadores de dominó en Excel'
+      dominoDownload: '/api/domino/winners/download - Descargar ganadores de dominó en Excel',
+      albumSpin: '/api/album/spin - Lanzar el álbum',
+      albumWinner: '/api/album/winner - Registrar ganador de álbum',
+      albumStats: '/api/album/stats - Obtener estadísticas de álbum',
+      albumDownload: '/api/album/winners/download - Descargar ganadores de álbum en Excel'
     }
   });
 });
@@ -74,6 +79,7 @@ app.get('/health', async (req, res) => {
 app.use('/api/stock', stockRoutes);
 app.use('/api/roulette', rouletteRoutes);
 app.use('/api/domino', dominoRoutes);
+app.use('/api/album', albumRoutes);
 
 // Manejo de rutas no encontradas
 app.use((req, res) => {
@@ -92,9 +98,11 @@ app.listen(PORT, HOST, () => {
   console.log(`📦 Stock endpoint: /api/stock`);
   console.log(`🎰 Roulette endpoint: /api/roulette`);
   console.log(`🎲 Domino endpoint: /api/domino`);
+  console.log(`📖 Album endpoint: /api/album`);
   console.log(`💚 Health check: /health`);
   console.log(`📥 Download winners: /api/roulette/winners/download`);
   console.log(`📥 Download domino winners: /api/domino/winners/download`);
+  console.log(`📥 Download album winners: /api/album/winners/download`);
   console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
 });
 
