@@ -4,7 +4,6 @@ const XLSX = require('xlsx');
 const Stock = require('../models/Stock');
 const Winner = require('../models/Winner');
 const { milex_probability } = require('../config/roulette');
-const { loadCustomerMapping } = require('../utils/customerMapping');
 
 // POST /api/milex/spin - Simulate Milex roulette spin with weighted probability
 router.post('/spin', async (req, res) => {
@@ -244,14 +243,10 @@ router.get('/winners/download', async (req, res) => {
       });
     }
 
-    // Load customer mapping from Excel
-    const customerMapping = loadCustomerMapping();
-
     // Prepare data for Excel
     const excelData = winners.map(winner => ({
       'ID': winner._id.toString(),
-      'Usuario (External ID)': winner.user_id,
-      'Customer Account ID': customerMapping.get(winner.user_id) || 'N/A',
+      'Usuario': winner.user_id,
       'Premio': winner.prize,
       'ID Premio': winner.prize_id,
       'ID Ruleta': winner.roulette_id,
@@ -274,8 +269,7 @@ router.get('/winners/download', async (req, res) => {
     // Auto-size columns
     const columnWidths = [
       { wch: 25 }, // ID
-      { wch: 50 }, // Usuario (External ID)
-      { wch: 20 }, // Customer Account ID
+      { wch: 50 }, // Usuario
       { wch: 30 }, // Premio
       { wch: 12 }, // ID Premio
       { wch: 12 }, // ID Ruleta
