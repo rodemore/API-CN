@@ -6,6 +6,7 @@ const stockRoutes = require('./routes/stock');
 const rouletteRoutes = require('./routes/roulette');
 const dominoRoutes = require('./routes/domino');
 const albumRoutes = require('./routes/album');
+const milexRoutes = require('./routes/roulette_milex');
 
 const app = express();
 
@@ -37,7 +38,11 @@ app.get('/', (req, res) => {
       albumSpin: '/api/album/spin - Lanzar el álbum',
       albumWinner: '/api/album/winner - Registrar ganador de álbum',
       albumStats: '/api/album/stats - Obtener estadísticas de álbum',
-      albumDownload: '/api/album/winners/download - Descargar ganadores de álbum en Excel'
+      albumDownload: '/api/album/winners/download - Descargar ganadores de álbum en Excel',
+      milexSpin: '/api/milex/spin - Lanzar la ruleta Milex',
+      milexWinner: '/api/milex/winner - Registrar ganador de Milex',
+      milexStats: '/api/milex/stats - Obtener estadísticas de Milex',
+      milexDownload: '/api/milex/winners/download - Descargar ganadores de Milex en Excel'
     }
   });
 });
@@ -80,6 +85,7 @@ app.use('/api/stock', stockRoutes);
 app.use('/api/roulette', rouletteRoutes);
 app.use('/api/domino', dominoRoutes);
 app.use('/api/album', albumRoutes);
+app.use('/api/milex', milexRoutes);
 
 // Manejo de rutas no encontradas
 app.use((req, res) => {
@@ -99,10 +105,12 @@ app.listen(PORT, HOST, () => {
   console.log(`🎰 Roulette endpoint: /api/roulette`);
   console.log(`🎲 Domino endpoint: /api/domino`);
   console.log(`📖 Album endpoint: /api/album`);
+  console.log(`🏥 Milex endpoint: /api/milex`);
   console.log(`💚 Health check: /health`);
   console.log(`📥 Download winners: /api/roulette/winners/download`);
   console.log(`📥 Download domino winners: /api/domino/winners/download`);
   console.log(`📥 Download album winners: /api/album/winners/download`);
+  console.log(`📥 Download milex winners: /api/milex/winners/download`);
   console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
 });
 

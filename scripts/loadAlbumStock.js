@@ -27,9 +27,10 @@ const loadAlbumStock = async () => {
     await Stock.deleteMany({ ID_RULETA: 3 });
     console.log('🗑️  Premios de álbum anteriores eliminados');
 
-    // Ajustar ID_RULETA a 3 para el juego de álbum
-    const albumData = validData.map(item => ({
+    // Ajustar ID_RULETA a 3 y reasignar ID_PREMIO a rango 201-206 para evitar conflictos
+    const albumData = validData.map((item, index) => ({
       ...item,
+      ID_PREMIO: 201 + index,
       ID_RULETA: 3,
       RULETA: 'Álbum'
     }));
