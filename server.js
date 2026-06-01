@@ -7,6 +7,7 @@ const rouletteRoutes = require('./routes/roulette');
 const dominoRoutes = require('./routes/domino');
 const albumRoutes = require('./routes/album');
 const milexRoutes = require('./routes/roulette_milex');
+const matchRoutes = require('./routes/match');
 
 const app = express();
 
@@ -86,6 +87,7 @@ app.use('/api/roulette', rouletteRoutes);
 app.use('/api/domino', dominoRoutes);
 app.use('/api/album', albumRoutes);
 app.use('/api/milex', milexRoutes);
+app.use('/api/match', matchRoutes);
 
 // Manejo de rutas no encontradas
 app.use((req, res) => {
