@@ -5,7 +5,7 @@ const connectDB = require('./config/database');
 const stockRoutes = require('./routes/stock');
 const rouletteRoutes = require('./routes/roulette');
 const dominoRoutes = require('./routes/domino');
-const albumRoutes = require('./routes/album');
+const albumRoutes = require('./routes/album_v2'); // New album system with pack opening
 const milexRoutes = require('./routes/roulette_milex');
 const matchRoutes = require('./routes/match');
 
@@ -36,10 +36,11 @@ app.get('/', (req, res) => {
       dominoWinner: '/api/domino/winner - Registrar ganador de dominó',
       dominoStats: '/api/domino/stats - Obtener estadísticas de dominó',
       dominoDownload: '/api/domino/winners/download - Descargar ganadores de dominó en Excel',
-      albumSpin: '/api/album/spin - Lanzar el álbum',
-      albumWinner: '/api/album/winner - Registrar ganador de álbum',
-      albumStats: '/api/album/stats - Obtener estadísticas de álbum',
-      albumDownload: '/api/album/winners/download - Descargar ganadores de álbum en Excel',
+      albumOpenPack: '/api/album/open-pack - Abrir pack de álbum (3 stickers)',
+      albumRegisterWinner: '/api/album/register-winner - Registrar pack abierto y ganador',
+      albumStats: '/api/album/stats/:album_id - Obtener estadísticas de un álbum específico',
+      albumStock: '/api/album/stock/:album_id - Obtener stock de stickers de un álbum',
+      albumDownload: '/api/album/winners/download/:album_id - Descargar ganadores de álbum en Excel',
       milexSpin: '/api/milex/spin - Lanzar la ruleta Milex',
       milexWinner: '/api/milex/winner - Registrar ganador de Milex',
       milexStats: '/api/milex/stats - Obtener estadísticas de Milex',

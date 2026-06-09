@@ -9,6 +9,7 @@
     "load-stock": "node scripts/loadInitialStock.js",
     "load-domino": "node scripts/loadDominoStock.js",
     "load-album": "node scripts/loadAlbumStock.js",
+    "load-album-v2": "node scripts/loadAlbumStockV2.js",
     "load-milex": "node scripts/loadMilexStock.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
