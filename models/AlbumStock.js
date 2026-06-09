@@ -26,7 +26,7 @@ const albumStockSchema = new mongoose.Schema({
   BRAND: {
     type: String,
     required: true,
-    enum: ['sv', 'mu', 'other'] // sv = Salva Vida, mu = Michelob Ultra
+    enum: ['sv', 'mu', 'pilsener', 'other'] // sv = Salva Vida, mu = Michelob Ultra, pilsener = Pilsener
   },
   IS_PRIZE: {
     type: Boolean,

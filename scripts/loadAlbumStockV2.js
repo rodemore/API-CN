@@ -11,8 +11,9 @@ async function loadAlbumStock() {
     await mongoose.connect(MONGODB_URI);
     console.log('✅ Conectado a MongoDB');
 
-    // Read Excel file
-    const excelPath = './Files/AlbumStockHN.xlsx';
+    // Get album ID from command line args (default to HN)
+    const albumArg = process.argv[2] || 'HN';
+    const excelPath = `./Files/AlbumStock${albumArg}.xlsx`;
     console.log(`📂 Leyendo archivo: ${excelPath}`);
 
     const workbook = XLSX.readFile(excelPath);
@@ -28,9 +29,12 @@ async function loadAlbumStock() {
       process.exit(0);
     }
 
-    console.log('🗑️ Limpiando colección AlbumStock...');
-    const deleteResult = await AlbumStock.deleteMany({});
-    console.log(`   Eliminados ${deleteResult.deletedCount} registros anteriores`);
+    // Obtener ALBUM_ID del primer registro para saber qué álbum limpiar
+    const firstAlbumId = data[0]?.ALBUM_ID?.toString().toUpperCase();
+
+    console.log(`🗑️ Limpiando álbum ${firstAlbumId} de la colección...`);
+    const deleteResult = await AlbumStock.deleteMany({ ALBUM_ID: firstAlbumId });
+    console.log(`   Eliminados ${deleteResult.deletedCount} registros del álbum ${firstAlbumId}`);
 
     console.log('💾 Insertando nuevos stickers del álbum...');
 
@@ -54,7 +58,7 @@ async function loadAlbumStock() {
 
         // Brand validation
         const brand = (row.BRAND || 'other').toLowerCase();
-        if (!['sv', 'mu', 'other'].includes(brand)) {
+        if (!['sv', 'mu', 'pilsener', 'other'].includes(brand)) {
           errors.push(`Marca inválida en fila: ${row.STICKER_ID} - ${brand}`);
           continue;
         }
