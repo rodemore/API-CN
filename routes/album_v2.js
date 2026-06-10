@@ -51,39 +51,49 @@ router.post('/open-pack', async (req, res) => {
     const shuffled = [...noPrizeStickers].sort(() => 0.5 - Math.random());
     const selectedNoPrize = shuffled.slice(0, 2);
 
-    // Step 2: Determine prize points using local probability
-    const prizePoints = getRandomPrizePoints();
-    console.log(`🎲 Generated prize: ${prizePoints} points`);
-
-    // Step 3: Get available prize stickers for this prize level with available stock
-    const prizeStickers = await AlbumStock.find({
+    // Step 2 & 3: Get ALL available prize stickers with stock
+    const allPrizeStickers = await AlbumStock.find({
       ALBUM_ID: album_id,
       IS_PRIZE: true,
-      PRIZE_POINTS: prizePoints,
       $expr: { $gt: [{ $subtract: ['$STOCK', '$GANADORES'] }, 0] }
     });
 
-    if (prizeStickers.length === 0) {
-      // Fallback: try to get any prize sticker with available stock
-      console.log(`⚠️ No ${prizePoints}pt stickers available, falling back...`);
-      const fallbackPrize = await AlbumStock.findOne({
-        ALBUM_ID: album_id,
-        IS_PRIZE: true,
-        $expr: { $gt: [{ $subtract: ['$STOCK', '$GANADORES'] }, 0] }
-      }).sort({ PRIZE_POINTS: 1 }); // Get lowest available prize
-
-      if (!fallbackPrize) {
-        return res.status(400).json({
-          success: false,
-          message: 'No hay premios disponibles en este momento. Intenta más tarde.'
-        });
-      }
-
-      prizeStickers.push(fallbackPrize);
+    if (allPrizeStickers.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'No hay premios disponibles en este momento. Intenta más tarde.'
+      });
     }
 
-    // Randomly select one prize sticker
-    const selectedPrizeSticker = prizeStickers[Math.floor(Math.random() * prizeStickers.length)];
+    // Step 3: Use weighted random selection based on available stock
+    // Calculate available stock for each prize sticker
+    const prizesWithWeights = allPrizeStickers.map(prize => ({
+      prize,
+      availableStock: prize.STOCK - prize.GANADORES
+    }));
+
+    // Calculate total available stock (sum of all weights)
+    const totalWeight = prizesWithWeights.reduce((sum, item) => sum + item.availableStock, 0);
+
+    // Generate random number between 0 and totalWeight
+    let randomWeight = Math.random() * totalWeight;
+
+    // Select prize based on weighted probability
+    let selectedPrizeSticker = null;
+    for (const item of prizesWithWeights) {
+      randomWeight -= item.availableStock;
+      if (randomWeight <= 0) {
+        selectedPrizeSticker = item.prize;
+        break;
+      }
+    }
+
+    // Fallback in case of rounding errors
+    if (!selectedPrizeSticker) {
+      selectedPrizeSticker = prizesWithWeights[prizesWithWeights.length - 1].prize;
+    }
+
+    console.log(`🎲 Selected prize: ${selectedPrizeSticker.STICKER_NAME} (${selectedPrizeSticker.PRIZE_POINTS}pts, Available: ${selectedPrizeSticker.STOCK - selectedPrizeSticker.GANADORES})`);
 
     // Step 4: Compose the 3-sticker pack (2 non-prize + 1 prize)
     const packStickers = [

@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bees Pack Opening Experience</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Gochi Hand & Bebas Neue -->
+    <link href="https://fonts.googleapis.com/css2?family=Gochi+Hand&family=Bebas+Neue&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* RESET Y CENTRADO */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Gochi Hand', cursive;
+            background-color: #d1d5db;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        /* Tipografía para Premios */
+        .prize-font {
+            font-family: 'Bebas Neue', sans-serif;
+            letter-spacing: 0.025em;
+        }
+
+        /* MARCO FIJO DE CELULAR */
+        #mobile-frame {
+            width: 375px;
+            height: 750px;
+            background-color: #0a0a0a;
+            border: 10px solid black;
+            border-radius: 55px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            z-index: 10;
+        }
+
+        @media (max-width: 500px) {
+            #mobile-frame {
+                width: 100vw;
+                height: 100vh;
+                border: none;
+                border-radius: 0;
+            }
+            body { background-color: #0a0a0a; }
+        }
+
+        .marker-effect { filter: url(#marker-filter); }
+
+        /* Animaciones */
+        @keyframes shake {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(1deg); }
+            75% { transform: rotate(-1deg); }
+        }
+        .shake-effect { animation: shake 0.4s infinite; }
+
+        @keyframes stickerPop {
+            0% { transform: scale(0.8) translateY(20px); opacity: 0; }
+            100% { transform: scale(1) translateY(0); opacity: 1; }
+        }
+        .sticker-appear { animation: stickerPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.2) forwards; }
+
+        /* Estilo Sketchy para botones */
+        .sketchy-button {
+            border: 3px solid black;
+            box-shadow: 6px 6px 0px 0px rgba(0,0,0,1);
+            text-transform: uppercase;
+            font-weight: 900;
+            transition: all 0.2s;
+            background: white;
+        }
+        .sketchy-button:active { box-shadow: 0px 0px 0px 0px; transform: translate(3px, 3px); }
+        .sketchy-button:disabled {
+            opacity: 0.5;
+            box-shadow: 2px 2px 0px 0px rgba(0,0,0,1);
+            transform: translate(2px, 2px);
+            cursor: not-allowed;
+        }
+
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Spinner para redirección */
+        .loader {
+            border-top-color: transparent;
+            border-width: 4px;
+        }
+
+        /* Efecto Metálico Dorado Premium */
+        .gold-badge {
+            background: linear-gradient(135deg,
+                #bf953f 0%,
+                #fcf6ba 25%,
+                #b38728 50%,
+                #fbf5b7 75%,
+                #aa771c 100%
+            );
+            box-shadow:
+                0 4px 10px rgba(0, 0, 0, 0.5),
+                inset 0 0 10px rgba(255, 255, 255, 0.4),
+                0 0 15px rgba(180, 83, 9, 0.3);
+            border: 1px solid #78350f;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .gold-badge::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to bottom right,
+                rgba(255,255,255,0) 0%,
+                rgba(255,255,255,0) 40%,
+                rgba(255,255,255,0.4) 50%,
+                rgba(255,255,255,0) 60%,
+                rgba(255,255,255,0) 100%
+            );
+            transform: rotate(45deg);
+            pointer-events: none;
+        }
+
+        /* Custom Checkbox */
+        .custom-checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid white;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .custom-checkbox.checked {
+            background: #facc15;
+            border-color: #facc15;
+        }
+
+        /* Brillo para sticker premiado */
+        @keyframes prizeGlow {
+            0%, 100% {
+                box-shadow: 0 0 20px rgba(234, 179, 8, 0.4),
+                            0 0 40px rgba(234, 179, 8, 0.2),
+                            0 10px 30px rgba(0, 0, 0, 0.9);
+            }
+            50% {
+                box-shadow: 0 0 30px rgba(234, 179, 8, 0.6),
+                            0 0 60px rgba(234, 179, 8, 0.3),
+                            0 10px 30px rgba(0, 0, 0, 0.9);
+            }
+        }
+        .prize-sticker-glow {
+            animation: prizeGlow 2s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+
+    <svg width="0" height="0" style="position: absolute;">
+        <defs>
+            <filter id="marker-filter">
+                <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="3" result="noise" />
+                <feDisplacementMap in="SourceGraphic" in2="noise" scale="2.2" />
+            </filter>
+        </defs>
+    </svg>
+
+    <div id="mobile-frame">
+        <div class="absolute inset-0 pointer-events-none opacity-[0.04] bg-[url('https://www.transparenttextures.com/patterns/handmade-paper.png')] z-10"></div>
+
+        <div id="notch" class="hidden md:block absolute top-0 left-1/2 -translate-x-1/2 w-36 h-7 bg-black rounded-b-3xl z-50 marker-effect"></div>
+
+        <!-- Botón de Cerrar In-App -->
+        <button id="global-close" onclick="closeInApp(event)" class="absolute top-12 right-6 text-white/40 hover:text-white transition-colors p-2 z-[60]">
+            <i data-lucide="x" class="w-8 h-8"></i>
+        </button>
+
+        <!-- VIEWPORT PRINCIPAL -->
+        <div id="app-viewport" class="flex-1 flex flex-col items-center justify-center relative z-20 transition-colors duration-500 bg-[#0a0a0a] px-2">
+            <!-- El contenido se renderiza aquí -->
+        </div>
+
+        <!-- MODAL DE TÉRMINOS -->
+        <div id="terms-modal" class="hidden absolute inset-0 bg-black/90 z-[100] flex items-center justify-center p-4">
+            <div class="bg-white p-5 sketchy-border marker-effect w-full max-h-[85%] flex flex-col shadow-[15px_15px_0px_0px_rgba(250,204,21,1)]">
+                <h2 class="text-lg font-black uppercase mb-2 italic text-center">Términos y Condiciones</h2>
+                <div class="flex-1 overflow-y-auto pr-2 no-scrollbar text-[8px] leading-[1.3] text-black font-sans mb-3">
+                    <h3 class="font-black uppercase mb-2 text-[10px] text-center">IMC - Copa Mundial de Fútbol 2026</h3>
+
+                    <p class="mb-1.5"><strong>Empresa patrocinadora:</strong> La Constancia, Ltda. de C.V.</p>
+                    <p class="mb-1.5"><strong>Nombre de la promoción:</strong> IMC – Copa Mundial de Fútbol de 2026</p>
+
+                    <p class="mb-1 font-bold">3. Participación:</p>
+                    <p class="mb-0.5 font-bold text-[7.5px]">A. Requisitos para participar:</p>
+                    <ul class="list-disc ml-4 mb-1.5 space-y-0.5 text-[7.5px]">
+                        <li>Mayores de 18 años</li>
+                        <li>Poseer DUI vigente</li>
+                        <li>Ser cliente de La Constancia</li>
+                        <li>Estar inscrito en app móvil "BEES" y pertenecer al Club B</li>
+                        <li>Aceptar términos y condiciones</li>
+                    </ul>
+
+                    <p class="mb-0.5 font-bold text-[7.5px]">B. No podrán participar:</p>
+                    <ul class="list-disc ml-4 mb-1.5 space-y-0.5 text-[7.5px]">
+                        <li>Menores de 18 años</li>
+                        <li>Empleados La Constancia, subsidiarias, familiares (2do grado consanguinidad, 1er afinidad)</li>
+                        <li>Empleados sociedades tercerización LC, socios, accionistas, familiares</li>
+                        <li>Empleados agencias publicidad/BTL, socios, accionistas, familiares</li>
+                        <li>Proveedores involucrados en promoción, socios, accionistas, familiares</li>
+                        <li>Personas con información privilegiada</li>
+                    </ul>
+
+                    <p class="mb-1 font-bold">4. Mecánica:</p>
+                    <ul class="list-disc ml-4 mb-1.5 space-y-0.5">
+                        <li>Completar Colección de Ofertas de Puntos de Pilsener en BEES: recibirá paquete de 3 stickers virtuales.</li>
+                        <li>Completar Colección de Ofertas de Puntos de Michelob Ultra en BEES: recibirá paquete de 3 stickers virtuales.</li>
+                        <li>Stickers dan posibilidad de ganar cantidad de puntos según apartado 4.1. No todos están premiados. Obtención es aleatoria.</li>
+                        <li>Puntos ganados = sumatoria de 3 stickers digitales.</li>
+                    </ul>
+
+                    <p class="mb-0.5 font-bold">4.1 Premios disponibles:</p>
+                    <ul class="list-disc ml-4 mb-1.5 space-y-0.5 text-[7.5px]">
+                        <li>10 stickers de 10,000 puntos</li>
+                        <li>1,592 stickers de 1,000 puntos</li>
+                        <li>1,582 stickers de 200 puntos</li>
+                    </ul>
+                    <p class="mb-1.5 text-[7.5px]">Stickers distribuidos entre participantes Colecciones Pilsener y Michelob Ultra. Entrega vía BEES en dirección registrada cuando se entregue pedido.</p>
+
+                    <p class="mb-1 font-bold">IMPORTANTE:</p>
+                    <ul class="list-disc ml-4 mb-1.5 space-y-0.5 text-[7.5px]">
+                        <li>Solo participan clientes con Colecciones completadas correctamente (compra total productos/cajas, facturas pagadas).</li>
+                        <li>La Constancia reserva derecho participación si considera participación fraudulenta o que cause altercado.</li>
+                        <li>Cancelación participación si detecta irregularidades (hackeo, violación leyes acoso virtual).</li>
+                        <li>Premios no transferibles, reembolsables ni canjeables por dinero/producto.</li>
+                        <li>La Constancia no responsable por daños de participación, entrega, recepción o uso premios.</li>
+                    </ul>
+
+                    <p class="mb-1 font-bold">Entrega de premios:</p>
+                    <p class="mb-1.5 text-[7.5px]">En domicilio registrado en BEES, día que se entregue producto solicitado. La Constancia puede solicitar ID o info adicional. No confirmar a tiempo = descalificación.</p>
+
+                    <p class="mb-1.5"><strong>Vigencia:</strong> 01 junio 2026 - 31 julio 2026</p>
+
+                    <p class="mb-1.5"><strong>Jurisdicción:</strong> Nacionalidad Salvadoreña, mayores edad, todo territorio nacional. Se descalifica perfiles falsos.</p>
+
+                    <p class="mb-1 font-bold">Derechos de imagen:</p>
+                    <p class="mb-1.5 text-[7.5px]">Participantes autorizan La Constancia difusión pública filmaciones/fotografías/imágenes todos medios, indefinidamente, sin compensación. Garantizan no existen terceros con derechos exclusividad.</p>
+
+                    <p class="mb-1 font-bold">Leyes aplicables:</p>
+                    <p class="mb-1.5 text-[7.5px]">Legislación Civil, Mercantil y Penal vigente El Salvador. Participantes aceptan someterse a legislación.</p>
+
+                    <p class="mb-1 font-bold">Aceptación normas:</p>
+                    <p class="mb-1.5 text-[7.5px]">Participación supone aceptación normas. La Constancia reserva derecho modificar/restringir/retirar dinámica. Participantes eximen responsabilidad por mal funcionamiento Internet/servidores.</p>
+
+                    <p class="mb-1 font-bold">Exoneración Responsabilidad:</p>
+                    <p class="mb-1.5 text-[7.5px]">La Constancia no asume responsabilidad por daños/perjuicios ganador o terceros.</p>
+
+                    <p class="mb-1 font-bold">Participaciones fraudulentas:</p>
+                    <p class="mb-1.5 text-[7.5px]">La Constancia reserva derecho eliminar inscripción si detecta anomalías, alteraciones, uso inadecuado/ilícito/contrario normativa.</p>
+
+                    <p class="mb-1 font-bold">Tratamiento datos personales:</p>
+                    <p class="mb-1.5 text-[7.5px]">Datos usados para: comercialización productos/servicios, promociones/concursos/entrega premios, voluntariado, atención clientes, encuestas, publicidad, investigación, estadísticas. Datos requeridos: nombre, domicilio, teléfonos, email, edad, género. Oposición: protecciondedatos_hones@ab-inbev.com</p>
+
+                    <p class="mb-1 font-bold">Transferencias datos:</p>
+                    <p class="mb-1.5 text-[7.5px]">La Constancia puede compartir datos con controladoras, subsidiarias, afiliadas, grupo corporativo para fines comerciales.</p>
+
+                    <p class="mb-1 font-bold">Modificaciones:</p>
+                    <p class="mb-1.5 text-[7.5px]">La Constancia reserva derecho modificar condiciones dinámica, aplazar o anular, publicándolo públicamente.</p>
+
+                    <p class="italic text-[7px] opacity-70 mt-2">La participación implica aceptación total de estas bases legales. La Constancia, Ltda. de C.V.</p>
+                    <p class="italic text-[7px] opacity-70">Última actualización: Junio 2026</p>
+                </div>
+                <button onclick="acceptTerms()" class="sketchy-button bg-yellow-400 w-full py-2.5 text-sm font-black">Acepto los Términos</button>
+            </div>
+        </div>
+
+        <!-- Barra inferior -->
+        <div class="h-8 w-full flex items-center justify-center bg-[#0a0a0a] z-40">
+            <div class="w-24 h-1.5 bg-white/10 rounded-full"></div>
+        </div>
+    </div>
+
+    <script>
+        // --- CONFIGURACIÓN API ---
+        const API_BASE_URL = 'https://api-cn.onrender.com/api/album';
+        const ALBUM_ID = 'SV'; // El Salvador
+
+        // Obtener user_id de URL params o generar uno temporal
+        function getUserId() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const userId = urlParams.get('user_id');
+
+            if (userId) {
+                return userId;
+            }
+
+            // Si estamos en Braze/Appboy, intentar obtener el ID
+            if (typeof appboyBridge !== 'undefined' && appboyBridge.getUser) {
+                try {
+                    const brazeUser = appboyBridge.getUser();
+                    if (brazeUser && brazeUser.getUserId) {
+                        return brazeUser.getUserId();
+                    }
+                } catch (e) {
+                    console.log('No se pudo obtener user_id de Braze');
+                }
+            }
+
+            // Fallback: generar ID temporal y guardarlo en sessionStorage
+            let tempUserId = sessionStorage.getItem('temp_user_id');
+            if (!tempUserId) {
+                tempUserId = 'temp_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                sessionStorage.setItem('temp_user_id', tempUserId);
+            }
+            return tempUserId;
+        }
+
+        let state = {
+            view: 'pack',
+            unopenedPacks: 1,
+            tempRevealing: [],
+            packData: null, // Datos del pack del API
+            termsAccepted: false,
+            isLoading: false
+        };
+
+        function renderApp() {
+            const viewport = document.getElementById('app-viewport');
+            const closeBtn = document.getElementById('global-close');
+
+            closeBtn.style.display = (state.view === 'pack' || state.view === 'summary') ? 'block' : 'none';
+
+            if (state.view === 'pack') {
+                const canOpen = state.termsAccepted && !state.isLoading;
+                viewport.innerHTML = `
+                    <div class="flex flex-col items-center">
+                        <div id="pack-container" class="relative ${canOpen ? 'cursor-pointer hover:scale-105' : 'cursor-not-allowed'} transition-all duration-500 ${state.termsAccepted ? 'opacity-100 grayscale-0' : 'opacity-60 grayscale'}" onclick="startOpeningSequence(event)">
+                            <img src="https://mysiterobert.s3.us-east-1.amazonaws.com/BEES_2026/Album2026/ESA/ESA_CoverPageGame.png" class="w-64 border-4 border-white/10 shadow-2xl ${state.termsAccepted && !state.isLoading ? 'shake-effect' : ''} text-center">
+                            <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                ${state.isLoading ? `
+                                    <div class="bg-white/90 px-5 py-3 rounded-lg flex items-center gap-2">
+                                        <div class="w-6 h-6 border-3 border-black border-t-transparent rounded-full animate-spin"></div>
+                                        <p class="text-black text-lg font-black uppercase">Abriendo...</p>
+                                    </div>
+                                ` : `
+                                    <p class="${state.termsAccepted ? 'bg-white text-black' : 'bg-neutral-600 text-neutral-400'} px-5 py-2 text-2xl rotate-[-5deg] marker-effect shadow-2xl uppercase font-black tracking-tighter text-center">¡Ábrelo!</p>
+                                `}
+                            </div>
+                        </div>
+
+                        <!-- SECCIÓN DE TÉRMINOS -->
+                        <div class="mt-12 flex items-center gap-3">
+                            <div id="check-box" onclick="toggleTerms()" class="custom-checkbox ${state.termsAccepted ? 'checked' : ''}">
+                                <i data-lucide="check" class="w-4 h-4 text-black ${state.termsAccepted ? 'block' : 'hidden'}"></i>
+                            </div>
+                            <p class="text-white/80 text-sm font-bold tracking-tight">
+                                Acepto los <span onclick="toggleTermsModal(true)" class="text-yellow-400 underline cursor-pointer decoration-2 underline-offset-2">Términos y Condiciones</span>
+                            </p>
+                        </div>
+                    </div>
+                `;
+            } else if (state.view === 'summary') {
+                viewport.innerHTML = `
+                    <div class="w-full h-full flex flex-col items-center justify-between pt-28 pb-12">
+                        <p class="text-3xl font-black uppercase tracking-tighter text-white marker-effect mb-2">¡Pack Abierto!</p>
+
+                        <div class="w-full grid grid-cols-2 gap-x-4 gap-y-3 px-4 content-center">
+                            ${state.tempRevealing.map((s, index) => {
+                                const isPrizeSticker = s.isPrize || index === 2;
+                                return `
+                                    <div class="relative sticker-appear ${isPrizeSticker ? 'col-span-2 justify-self-center' : (index === 0 ? 'justify-self-end' : 'justify-self-start')}"
+                                         style="animation-delay: ${index * 150}ms; transform: rotate(${index === 0 ? '-1.5' : (index === 1 ? '1.5' : '0')}deg); width: 148px;">
+
+                                        <div class="aspect-square border-2 ${isPrizeSticker ? 'border-yellow-500 prize-sticker-glow' : 'border-white shadow-[0_10px_30px_rgba(0,0,0,0.9)]'} overflow-hidden rounded-md">
+                                            <img src="${s.url}" class="w-full h-full object-cover">
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+
+                        <div class="flex flex-col items-center mt-6">
+                            <button onclick="finalAction(event)" class="sketchy-button marker-effect px-14 py-4 text-xl bg-white text-black">¡Obtener Más!</button>
+                        </div>
+                    </div>
+                `;
+            } else if (state.view === 'loading') {
+                viewport.innerHTML = `
+                    <div class="text-center text-white p-8">
+                        <div class="mb-6 flex justify-center">
+                            <div class="w-16 h-16 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin loader"></div>
+                        </div>
+                        <p class="text-2xl font-black uppercase tracking-tighter leading-tight">Abriendo Pack...</p>
+                        <p class="text-sm opacity-60 mt-2">Por favor espera</p>
+                    </div>
+                `;
+            }
+            lucide.createIcons();
+        }
+
+        function toggleTerms() {
+            state.termsAccepted = !state.termsAccepted;
+
+            // Log de Braze: checkbox de términos
+            if (typeof appboyBridge !== 'undefined') {
+                if (state.termsAccepted) {
+                    appboyBridge.logClick('Términos Aceptados - Checkbox');
+                } else {
+                    appboyBridge.logClick('Términos Rechazados - Checkbox');
+                }
+            }
+
+            renderApp();
+        }
+
+        function toggleTermsModal(show) {
+            const modal = document.getElementById('terms-modal');
+            if (show) {
+                modal.classList.remove('hidden');
+
+                // Log de Braze: abrir modal de términos
+                if (typeof appboyBridge !== 'undefined') {
+                    appboyBridge.logClick('Ver Términos y Condiciones');
+                }
+            } else {
+                modal.classList.add('hidden');
+            }
+        }
+
+        function acceptTerms() {
+            state.termsAccepted = true;
+            toggleTermsModal(false);
+
+            // Log de Braze: aceptar términos desde modal
+            if (typeof appboyBridge !== 'undefined') {
+                appboyBridge.logClick('Términos Aceptados - Botón Modal');
+            }
+
+            renderApp();
+        }
+
+        function closeInApp(e) {
+            if (e) e.stopPropagation();
+            if (typeof appboyBridge !== 'undefined') {
+                appboyBridge.logClick('Cerrar Publicidad');
+                appboyBridge.closeMessage();
+                appboyBridge.logClick('Cerrar Inapp');
+            }
+        }
+
+        // Llamar al API para abrir pack
+        async function openPackFromAPI() {
+            const userId = getUserId();
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/open-pack`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        album_id: ALBUM_ID,
+                        user_id: userId
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok || !data.success) {
+                    throw new Error(data.message || 'Error al abrir el pack');
+                }
+
+                return data.data;
+            } catch (error) {
+                console.error('Error abriendo pack:', error);
+                throw error;
+            }
+        }
+
+        // Registrar ganador en el API
+        async function registerWinner(packData) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/register-winner`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(packData)
+                });
+
+                const data = await response.json();
+
+                if (!response.ok || !data.success) {
+                    console.error('Error registrando ganador:', data.message);
+                    // No lanzamos error para no interrumpir la experiencia del usuario
+                }
+
+                console.log('Ganador registrado exitosamente');
+                return data;
+            } catch (error) {
+                console.error('Error registrando ganador:', error);
+                // No lanzamos error para no interrumpir la experiencia del usuario
+            }
+        }
+
+        async function startOpeningSequence(e) {
+            if (e) e.stopPropagation();
+            if (!state.termsAccepted || state.isLoading) return;
+
+            console.log('🎮 Iniciando apertura de pack...');
+
+            if (typeof appboyBridge !== 'undefined') {
+                appboyBridge.logClick('Abrir Pack');
+            }
+
+            // Activar estado de carga
+            state.isLoading = true;
+            renderApp(); // Re-renderizar para mostrar el loader
+
+            const packContainer = document.getElementById('pack-container');
+
+            try {
+                // Llamar al API para abrir el pack
+                console.log('📡 Llamando al API...');
+                const packData = await openPackFromAPI();
+                console.log('✅ Pack recibido del API:', packData);
+
+                // Animación de cierre del pack
+                if (packContainer) {
+                    packContainer.style.transform = 'scale(3) rotate(20deg)';
+                    packContainer.style.opacity = '0';
+                }
+
+                setTimeout(() => {
+                    state.unopenedPacks--;
+
+                    // Convertir los stickers del API al formato del frontend
+                    const pickedStickers = packData.pack_stickers.map(sticker => ({
+                        id: sticker.sticker_id,
+                        url: sticker.sticker_url,
+                        prize: sticker.prize_points,
+                        brand: sticker.brand,
+                        isPrize: sticker.is_prize,
+                        prizeValue: sticker.prize_points
+                    }));
+
+                    console.log('🎨 Stickers procesados:', pickedStickers);
+
+                    // Log de Braze: pack abierto exitosamente con detalles del premio
+                    if (typeof appboyBridge !== 'undefined') {
+                        const prizePoints = packData.total_prize_points;
+                        const prizeName = packData.prize_sticker.sticker_name;
+                        appboyBridge.logClick(`Pack Abierto - ${prizePoints} pts`);
+                        appboyBridge.logCustomEvent('Album Pack Opened', {
+                            album_id: packData.album_id,
+                            prize_points: prizePoints,
+                            prize_sticker: prizeName
+                        });
+                    }
+
+                    state.tempRevealing = pickedStickers;
+                    state.packData = packData; // Guardar datos completos para registro
+                    state.view = 'summary';
+                    state.isLoading = false;
+                    renderApp();
+
+                    // Registrar ganador en segundo plano
+                    console.log('📝 Registrando ganador...');
+                    setTimeout(() => {
+                        registerWinner(packData);
+                    }, 1000);
+                }, 500);
+
+            } catch (error) {
+                console.error('❌ Error abriendo pack:', error);
+
+                // Log de Braze: error al abrir pack
+                if (typeof appboyBridge !== 'undefined') {
+                    appboyBridge.logClick('Error al Abrir Pack');
+                    appboyBridge.logCustomEvent('Album Pack Error', {
+                        error_message: error.message,
+                        album_id: ALBUM_ID
+                    });
+                }
+
+                // Mostrar error al usuario
+                alert('Error al abrir el pack. Por favor intenta de nuevo.\n\n' + error.message);
+
+                state.isLoading = false;
+                renderApp(); // Re-renderizar para quitar el loader
+
+                // Resetear el pack container
+                if (packContainer) {
+                    packContainer.style.transform = '';
+                    packContainer.style.opacity = '1';
+                }
+            }
+        }
+
+        function finalAction(e) {
+            if (e) e.stopPropagation();
+            if (typeof appboyBridge !== 'undefined') {
+                appboyBridge.logClick('Obtener Más Packs');
+            }
+            const viewport = document.getElementById('app-viewport');
+            const closeBtn = document.getElementById('global-close');
+            closeBtn.style.display = 'none';
+            viewport.innerHTML = `
+                <div class="text-center text-white p-8">
+                    <div class="mb-10 flex justify-center">
+                        <div class="w-16 h-16 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin loader"></div>
+                    </div>
+                    <p class="text-3xl font-black uppercase tracking-tighter leading-tight mb-4 text-center">Abriendo Desafíos BEES</p>
+                    <p class="text-sm opacity-40 uppercase tracking-widest animate-pulse font-bold">Redirigiendo...</p>
+                </div>
+            `;
+            setTimeout(() => {
+                window.location.href = 'https://mybees.hn/rewards?storeId=a5bfd193-7ee7-48cb-96f7-5af632625ab2';
+            }, 1500);
+        }
+
+        window.onload = renderApp;
+    </script>
+</body>
+</html>

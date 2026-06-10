@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test API Album - Honduras</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-left: 4px solid #4CAF50;
+            border-radius: 4px;
+        }
+        .error {
+            border-left-color: #f44336;
+            background: #ffebee;
+        }
+        .sticker {
+            display: inline-block;
+            margin: 10px;
+            text-align: center;
+        }
+        .sticker img {
+            width: 150px;
+            height: 150px;
+            border: 3px solid #ddd;
+            border-radius: 10px;
+        }
+        .sticker.prize img {
+            border-color: #FFD700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+        .sticker .label {
+            margin-top: 5px;
+            font-weight: bold;
+        }
+        input {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 300px;
+            font-size: 14px;
+        }
+        .info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        pre {
+            background: #263238;
+            color: #aed581;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 Test API Album - Honduras</h1>
+
+        <div class="info">
+            <strong>API Base URL:</strong> https://api-cn.onrender.com/api/album<br>
+            <strong>Album ID:</strong> HN<br>
+            <strong>User ID:</strong> <span id="current-user-id">temp_user</span>
+        </div>
+
+        <div>
+            <label>User ID (opcional):</label><br>
+            <input type="text" id="user-id-input" placeholder="Dejar vacío para usar ID temporal">
+        </div>
+
+        <div style="margin-top: 20px;">
+            <button onclick="testOpenPack()" id="open-pack-btn">🎁 Abrir Pack</button>
+            <button onclick="testGetStats()">📊 Ver Estadísticas</button>
+            <button onclick="testGetStock()">📦 Ver Stock</button>
+        </div>
+
+        <div id="result"></div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'https://api-cn.onrender.com/api/album';
+        const ALBUM_ID = 'HN';
+
+        // Generar user_id temporal
+        function getUserId() {
+            const input = document.getElementById('user-id-input').value.trim();
+            if (input) return input;
+
+            let tempUserId = sessionStorage.getItem('temp_user_id');
+            if (!tempUserId) {
+                tempUserId = 'test_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                sessionStorage.setItem('temp_user_id', tempUserId);
+            }
+            document.getElementById('current-user-id').textContent = tempUserId;
+            return tempUserId;
+        }
+
+        async function testOpenPack() {
+            const userId = getUserId();
+            const resultDiv = document.getElementById('result');
+            const btn = document.getElementById('open-pack-btn');
+
+            btn.disabled = true;
+            btn.textContent = '⏳ Abriendo pack...';
+
+            resultDiv.innerHTML = '<p>🔄 Llamando al API...</p>';
+
+            try {
+                console.log('📡 Enviando request:', { album_id: ALBUM_ID, user_id: userId });
+
+                const response = await fetch(`${API_BASE_URL}/open-pack`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        album_id: ALBUM_ID,
+                        user_id: userId
+                    })
+                });
+
+                const data = await response.json();
+                console.log('✅ Respuesta del API:', data);
+
+                if (!response.ok || !data.success) {
+                    throw new Error(data.message || 'Error al abrir pack');
+                }
+
+                // Mostrar resultado
+                const packData = data.data;
+                let html = '<div class="result">';
+                html += `<h3>✅ Pack Abierto Exitosamente!</h3>`;
+                html += `<p><strong>Puntos Ganados:</strong> ${packData.total_prize_points.toLocaleString()} pts</p>`;
+                html += `<p><strong>Premio:</strong> ${packData.prize_sticker.sticker_name}</p>`;
+                html += `<p><strong>Stock Restante:</strong> ${packData.remaining_stock}</p>`;
+                html += '<hr>';
+                html += '<h4>Stickers Recibidos:</h4>';
+
+                packData.pack_stickers.forEach((sticker, index) => {
+                    const isPrize = sticker.is_prize;
+                    html += `
+                        <div class="sticker ${isPrize ? 'prize' : ''}">
+                            <img src="${sticker.sticker_url}" alt="${sticker.sticker_name}">
+                            <div class="label">
+                                ${sticker.sticker_name}
+                                ${isPrize ? '<br>🏆 ' + sticker.prize_points + ' pts' : ''}
+                            </div>
+                        </div>
+                    `;
+                });
+
+                html += '<hr>';
+                html += '<h4>Datos Completos:</h4>';
+                html += `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+                html += '</div>';
+
+                resultDiv.innerHTML = html;
+
+                // Registrar ganador
+                setTimeout(async () => {
+                    console.log('📝 Registrando ganador...');
+                    try {
+                        const registerResponse = await fetch(`${API_BASE_URL}/register-winner`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(packData)
+                        });
+
+                        const registerData = await registerResponse.json();
+                        console.log('✅ Ganador registrado:', registerData);
+                    } catch (err) {
+                        console.error('❌ Error registrando ganador:', err);
+                    }
+                }, 1000);
+
+            } catch (error) {
+                console.error('❌ Error:', error);
+                resultDiv.innerHTML = `
+                    <div class="result error">
+                        <h3>❌ Error</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '🎁 Abrir Pack';
+            }
+        }
+
+        async function testGetStats() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<p>🔄 Obteniendo estadísticas...</p>';
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/stats/${ALBUM_ID}`);
+                const data = await response.json();
+
+                console.log('📊 Estadísticas:', data);
+
+                let html = '<div class="result">';
+                html += '<h3>📊 Estadísticas del Álbum HN</h3>';
+                html += `<p><strong>Total Premios:</strong> ${data.summary.total_prize_stock}</p>`;
+                html += `<p><strong>Premios Otorgados:</strong> ${data.summary.total_prizes_awarded}</p>`;
+                html += `<p><strong>Premios Disponibles:</strong> ${data.summary.total_prizes_available}</p>`;
+                html += '<hr>';
+                html += '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+                html += '</div>';
+
+                resultDiv.innerHTML = html;
+            } catch (error) {
+                console.error('❌ Error:', error);
+                resultDiv.innerHTML = `<div class="result error"><h3>❌ Error</h3><p>${error.message}</p></div>`;
+            }
+        }
+
+        async function testGetStock() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<p>🔄 Obteniendo stock...</p>';
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/stock/${ALBUM_ID}`);
+                const data = await response.json();
+
+                console.log('📦 Stock:', data);
+
+                let html = '<div class="result">';
+                html += '<h3>📦 Stock de Stickers HN</h3>';
+                html += `<p><strong>Total Stickers:</strong> ${data.total_stickers}</p>`;
+                html += '<hr>';
+                html += '<h4>Stickers con Premio:</h4>';
+
+                const prizeStickers = data.stickers.filter(s => s.is_prize);
+                prizeStickers.forEach(sticker => {
+                    html += `
+                        <p>
+                            <strong>${sticker.sticker_name}</strong> (${sticker.prize_points} pts)<br>
+                            Stock: ${sticker.total_stock} | Otorgados: ${sticker.awarded} | Disponibles: ${sticker.available}
+                        </p>
+                    `;
+                });
+
+                html += '<hr>';
+                html += '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+                html += '</div>';
+
+                resultDiv.innerHTML = html;
+            } catch (error) {
+                console.error('❌ Error:', error);
+                resultDiv.innerHTML = `<div class="result error"><h3>❌ Error</h3><p>${error.message}</p></div>`;
+            }
+        }
+
+        // Cargar user_id al inicio
+        window.onload = () => {
+            getUserId();
+        };
+    </script>
+</body>
+</html>

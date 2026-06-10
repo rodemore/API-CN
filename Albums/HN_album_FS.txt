@@ -187,7 +187,7 @@
         <div id="notch" class="hidden md:block absolute top-0 left-1/2 -translate-x-1/2 w-36 h-7 bg-black rounded-b-3xl z-50 marker-effect"></div>
 
         <!-- Botón de Cerrar In-App -->
-        <button id="global-close" onclick="closeInApp(event)" class="absolute top-12 right-6 text-white/40 hover:text-white transition-colors p-2 z-[60]" aria-label="Close">
+        <button id="global-close" class="absolute top-12 right-6 text-white/40 hover:text-white transition-colors p-2 z-[60]" aria-label="Close">
             <i data-lucide="x" class="w-8 h-8"></i>
         </button>
 
@@ -303,7 +303,7 @@
                     <p class="italic text-[7px] opacity-70 mt-2">La participación implica aceptación total de estas bases legales. Cervecería Hondureña S.A. de C.V.</p>
                     <p class="italic text-[7px] opacity-70">Última actualización: Febrero 2026</p>
                 </div>
-                <button onclick="acceptTerms()" class="sketchy-button bg-yellow-400 w-full py-2.5 text-sm font-black">Acepto los Términos</button>
+                <button id="accept-terms-btn" class="sketchy-button bg-yellow-400 w-full py-2.5 text-sm font-black">Acepto los Términos</button>
             </div>
         </div>
 
@@ -314,12 +314,16 @@
     </div>
 
     <script>
-        // --- CONFIGURACIÓN API ---
-        const API_BASE_URL = 'https://api-cn.onrender.com/api/album';
-        const ALBUM_ID = 'HN';
+        // Envolver todo en DOMContentLoaded para asegurar que Braze esté listo
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('[Init] DOM Content Loaded - Inicializando app');
 
-        // Obtener user_id de URL params o generar uno temporal
-        function getUserId() {
+            // --- CONFIGURACIÓN API ---
+            const API_BASE_URL = 'https://api-cn.onrender.com/api/album';
+            const ALBUM_ID = 'HN';
+
+            // Obtener user_id de URL params o generar uno temporal
+            function getUserId() {
             const urlParams = new URLSearchParams(window.location.search);
             const userId = urlParams.get('user_id');
 
@@ -367,7 +371,7 @@
                 const canOpen = state.termsAccepted && !state.isLoading;
                 viewport.innerHTML = `
                     <div class="flex flex-col items-center">
-                        <div id="pack-container" class="relative ${canOpen ? 'cursor-pointer hover:scale-105' : 'cursor-not-allowed'} transition-all duration-500 ${state.termsAccepted ? 'opacity-100 grayscale-0' : 'opacity-60 grayscale'}" onclick="startOpeningSequence(event)">
+                        <div id="pack-container" class="relative ${canOpen ? 'cursor-pointer hover:scale-105' : 'cursor-not-allowed'} transition-all duration-500 ${state.termsAccepted ? 'opacity-100 grayscale-0' : 'opacity-60 grayscale'}">
                             <img src="https://mysiterobert.s3.us-east-1.amazonaws.com/BEES_2026/Album2026/HN/ESA_CoverPageGame.png" alt="Pack de stickers para abrir" class="w-64 border-4 border-white/10 shadow-2xl ${state.termsAccepted && !state.isLoading ? 'shake-effect' : ''} text-center">
                             <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
                                 ${state.isLoading ? `
@@ -383,15 +387,34 @@
 
                         <!-- SECCIÓN DE TÉRMINOS -->
                         <div class="mt-12 flex items-center gap-3">
-                            <div id="check-box" onclick="toggleTerms()" class="custom-checkbox ${state.termsAccepted ? 'checked' : ''}">
+                            <div id="check-box" class="custom-checkbox ${state.termsAccepted ? 'checked' : ''}">
                                 <i data-lucide="check" class="w-4 h-4 text-black ${state.termsAccepted ? 'block' : 'hidden'}"></i>
                             </div>
                             <p class="text-white/80 text-sm font-bold tracking-tight">
-                                Acepto los <span onclick="toggleTermsModal(true)" class="text-yellow-400 underline cursor-pointer decoration-2 underline-offset-2">Términos y Condiciones</span>
+                                Acepto los <span id="terms-link" class="text-yellow-400 underline cursor-pointer decoration-2 underline-offset-2">Términos y Condiciones</span>
                             </p>
                         </div>
                     </div>
                 `;
+
+                // Agregar event listeners después de insertar HTML (como milex.txt)
+                const packContainer = document.getElementById('pack-container');
+                if (packContainer && canOpen) {
+                    packContainer.addEventListener('click', startOpeningSequence);
+                }
+
+                const checkBox = document.getElementById('check-box');
+                if (checkBox) {
+                    checkBox.addEventListener('click', toggleTerms);
+                }
+
+                const termsLink = document.getElementById('terms-link');
+                if (termsLink) {
+                    termsLink.addEventListener('click', function() {
+                        toggleTermsModal(true);
+                    });
+                }
+
             } else if (state.view === 'summary') {
                 viewport.innerHTML = `
                     <div class="w-full h-full flex flex-col items-center justify-between pt-28 pb-12">
@@ -413,10 +436,17 @@
                         </div>
 
                         <div class="flex flex-col items-center mt-6">
-                            <button onclick="finalAction(event)" class="sketchy-button marker-effect px-14 py-4 text-xl bg-white text-black">¡Obtener Más!</button>
+                            <button id="get-more-btn" class="sketchy-button marker-effect px-14 py-4 text-xl bg-white text-black">¡Obtener Más!</button>
                         </div>
                     </div>
                 `;
+
+                // Agregar event listener al botón después de insertar HTML
+                const getMoreBtn = document.getElementById('get-more-btn');
+                if (getMoreBtn) {
+                    getMoreBtn.addEventListener('click', finalAction);
+                }
+
             } else if (state.view === 'loading') {
                 viewport.innerHTML = `
                     <div class="text-center text-white p-8">
@@ -472,8 +502,7 @@
             renderApp();
         }
 
-        function closeInApp(e) {
-            if (e) e.stopPropagation();
+        function closeInApp() {
             if (typeof appboyBridge !== 'undefined') {
                 appboyBridge.logClick('Cerrar Publicidad');
                 appboyBridge.closeMessage();
@@ -481,11 +510,16 @@
             }
         }
 
-        // Llamar al API para abrir pack
+        // Llamar al API para abrir pack (usando fetch como milex.txt que funciona)
         async function openPackFromAPI() {
             const userId = getUserId();
 
             try {
+                console.log('[API] Llamando a open-pack...');
+
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 10000);
+
                 const response = await fetch(`${API_BASE_URL}/open-pack`, {
                     method: 'POST',
                     headers: {
@@ -494,50 +528,72 @@
                     body: JSON.stringify({
                         album_id: ALBUM_ID,
                         user_id: userId
-                    })
+                    }),
+                    signal: controller.signal
                 });
 
-                const data = await response.json();
+                clearTimeout(timeoutId);
+                console.log('[API] Response status:', response.status);
 
-                if (!response.ok || !data.success) {
-                    throw new Error(data.message || 'Error al abrir el pack');
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('[API] Error response:', errorText);
+                    throw new Error(`Error: ${response.status}`);
                 }
 
-                return data.data;
+                const data = await response.json();
+                console.log('[API] Data received:', data);
+
+                if (data.success) {
+                    return data.data;
+                } else {
+                    throw new Error(data.message || 'Error al abrir el pack');
+                }
             } catch (error) {
-                console.error('Error abriendo pack:', error);
+                const isTimeout = error.name === 'AbortError';
+                console.error('[API] Error:', isTimeout ? 'TIMEOUT' : error.message);
                 throw error;
             }
         }
 
-        // Registrar ganador en el API
+        // Registrar ganador en el API (usando fetch como milex.txt que funciona)
         async function registerWinner(packData) {
             try {
+                console.log('[Registro] Enviando ganador:', packData);
+
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 10000);
+
                 const response = await fetch(`${API_BASE_URL}/register-winner`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(packData)
+                    body: JSON.stringify(packData),
+                    signal: controller.signal
                 });
 
-                const data = await response.json();
+                clearTimeout(timeoutId);
 
-                if (!response.ok || !data.success) {
-                    console.error('Error registrando ganador:', data.message);
-                    // No lanzamos error para no interrumpir la experiencia del usuario
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('[Registro] Error:', errorText);
+                    // No lanzamos error para no interrumpir la experiencia
+                    return false;
                 }
 
-                console.log('Ganador registrado exitosamente');
-                return data;
+                const data = await response.json();
+                console.log('[Registro] Ganador registrado:', data);
+                return true;
             } catch (error) {
-                console.error('Error registrando ganador:', error);
-                // No lanzamos error para no interrumpir la experiencia del usuario
+                const isTimeout = error.name === 'AbortError';
+                console.error('[Registro] Error:', isTimeout ? 'TIMEOUT' : error.message);
+                // No lanzamos error para no interrumpir la experiencia
+                return false;
             }
         }
 
-        async function startOpeningSequence(e) {
-            if (e) e.stopPropagation();
+        async function startOpeningSequence() {
             if (!state.termsAccepted || state.isLoading) return;
 
             console.log('🎮 Iniciando apertura de pack...');
@@ -616,9 +672,8 @@
                     });
                 }
 
-                // Mostrar error al usuario
-                alert('Error al abrir el pack. Por favor intenta de nuevo.\n\n' + error.message);
-
+                // NO mostrar alert - manejo silencioso del error
+                // Simplemente resetear el estado para que el usuario pueda intentar de nuevo
                 state.isLoading = false;
                 renderApp(); // Re-renderizar para quitar el loader
 
@@ -630,8 +685,7 @@
             }
         }
 
-        function finalAction(e) {
-            if (e) e.stopPropagation();
+        function finalAction() {
             if (typeof appboyBridge !== 'undefined') {
                 appboyBridge.logClick('Obtener Más Packs');
             }
@@ -652,7 +706,24 @@
             }, 1500);
         }
 
-        window.onload = renderApp;
+        window.onload = function() {
+            // Agregar event listener al botón de cerrar (como milex.txt)
+            const closeBtn = document.getElementById('global-close');
+            if (closeBtn) {
+                closeBtn.addEventListener('click', closeInApp);
+            }
+
+            // Agregar event listener al botón del modal de términos
+            const acceptTermsBtn = document.getElementById('accept-terms-btn');
+            if (acceptTermsBtn) {
+                acceptTermsBtn.addEventListener('click', acceptTerms);
+            }
+
+                // Renderizar la app inicial
+                renderApp();
+            };
+
+        }); // Fin de DOMContentLoaded
     </script>
 </body>
 </html>
