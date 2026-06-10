@@ -105,6 +105,11 @@ node scripts/createHNAlbumExcel.js
 node scripts/loadAlbumStockV2.js HN
 ```
 
+**Download Winners:**
+```
+https://api-cn.onrender.com/api/album/winners/download/HN
+```
+
 #### Restore El Salvador (SV)
 ```bash
 # 1. Regenerate Excel file
@@ -112,6 +117,11 @@ node scripts/createESAAlbumExcel.js
 
 # 2. Load to MongoDB (will delete existing SV stock first)
 node scripts/loadAlbumStockV2.js ESA
+```
+
+**Download Winners:**
+```
+https://api-cn.onrender.com/api/album/winners/download/SV
 ```
 
 ### Option 2: Using npm Scripts
@@ -163,11 +173,20 @@ curl https://api-cn.onrender.com/api/album/stats/HN
 
 # Check El Salvador stock
 curl https://api-cn.onrender.com/api/album/stats/SV
+
+# Check South Africa stock
+curl https://api-cn.onrender.com/api/album/stats/ZA
 ```
 
 **Expected Results:**
 - HN: `total_prize_stock: 840`
 - SV: `total_prize_stock: 3184`
+- ZA: `total_prize_stock: 13000`
+
+**Download Winners (Excel):**
+- HN: `https://api-cn.onrender.com/api/album/winners/download/HN`
+- SV: `https://api-cn.onrender.com/api/album/winners/download/SV`
+- ZA: `https://api-cn.onrender.com/api/album/winners/download/ZA`
 
 ---
 
@@ -241,6 +260,15 @@ node scripts/loadAlbumStockV2.js ZA
 ```bash
 curl https://api-cn.onrender.com/api/album/stats/ZA
 # Expected: "total_prize_stock": 13000
+```
+
+**Download Winners:**
+```bash
+# Download Excel with all ZA winners
+curl -O https://api-cn.onrender.com/api/album/winners/download/ZA
+
+# Or open directly in browser:
+# https://api-cn.onrender.com/api/album/winners/download/ZA
 ```
 
 ---
