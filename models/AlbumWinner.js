@@ -8,7 +8,7 @@ const albumWinnerSchema = new mongoose.Schema({
   album_id: {
     type: String,
     required: true,
-    enum: ['HN', 'GT', 'SV', 'NI', 'CR', 'PA', 'DO', 'EC', 'PY', 'BO']
+    enum: ['HN', 'GT', 'SV', 'NI', 'CR', 'PA', 'DO', 'EC', 'PY', 'BO', 'ZA']
   },
   pack_stickers: {
     type: [{
