@@ -20,16 +20,16 @@ const ESA_STICKERS = [
   { ALBUM_ID: 'SV', STICKER_ID: 'mu4', STICKER_NAME: 'Michelob Ultra Game 4', STICKER_URL: 'https://mysiterobert.s3.us-east-1.amazonaws.com/BEES_2026/Album2026/ESA/ESA_MU+StickerGame4_1K+Points.png', PRIZE_POINTS: 1000, BRAND: 'mu', STOCK: 398 },
 
   // PREMIO: 200 puntos (1,582 total - distribuidos en 4 stickers = 395-396 cada uno)
-  { ALBUM_ID: 'SV', STICKER_ID: 'sv5', STICKER_NAME: 'Pilsener Game 5', STICKER_URL: 'https://mysiterobert.s3.us-east-1.amazonaws.com/BEES_2026/Album2026/ESA/ESA_PilsenerStickerGame5_200+Points.png', PRIZE_POINTS: 200, BRAND: 'pilsener', STOCK: 396 },
-  { ALBUM_ID: 'SV', STICKER_ID: 'sv6', STICKER_NAME: 'Pilsener Game 6', STICKER_URL: 'https://mysiterobert.s3.us-east-1.amazonaws.com/BEES_2026/Album2026/ESA/ESA_PilsenerStickerGame6_200+Points.png', PRIZE_POINTS: 200, BRAND: 'pilsener', STOCK: 396 },
+  { ALBUM_ID: 'SV', STICKER_ID: 'sv5', STICKER_NAME: 'Pilsener Game 5', STICKER_URL: 'https://mysiterobert.s3.us-east-1.amazonaws.com/BEES_2026/Album2026/ESA/ESA_PilsenerStickerGame5_200Points.png', PRIZE_POINTS: 200, BRAND: 'pilsener', STOCK: 396 },
+  { ALBUM_ID: 'SV', STICKER_ID: 'sv6', STICKER_NAME: 'Pilsener Game 6', STICKER_URL: 'https://mysiterobert.s3.us-east-1.amazonaws.com/BEES_2026/Album2026/ESA/ESA_PilsenerStickerGame6_200Points.png', PRIZE_POINTS: 200, BRAND: 'pilsener', STOCK: 396 },
   { ALBUM_ID: 'SV', STICKER_ID: 'mu5', STICKER_NAME: 'Michelob Ultra Game 5', STICKER_URL: 'https://mysiterobert.s3.us-east-1.amazonaws.com/BEES_2026/Album2026/ESA/ESA_MU+StickerGame5_200+Points.png', PRIZE_POINTS: 200, BRAND: 'mu', STOCK: 395 },
   { ALBUM_ID: 'SV', STICKER_ID: 'mu6', STICKER_NAME: 'Michelob Ultra Game 6', STICKER_URL: 'https://mysiterobert.s3.us-east-1.amazonaws.com/BEES_2026/Album2026/ESA/ESA_MU+StickerGame6_200+Points.png', PRIZE_POINTS: 200, BRAND: 'mu', STOCK: 395 },
 
   // SIN PREMIO (Non-Prize stickers - stock ilimitado)
   { ALBUM_ID: 'SV', STICKER_ID: 'sv7', STICKER_NAME: 'Pilsener Game 7 - No Prize', STICKER_URL: 'https://mysiterobert.s3.us-east-1.amazonaws.com/BEES_2026/Album2026/ESA/ESA_PilsenerStickerGame7_Non-Prize.png', PRIZE_POINTS: 0, BRAND: 'pilsener', STOCK: 999999 },
   { ALBUM_ID: 'SV', STICKER_ID: 'sv8', STICKER_NAME: 'Pilsener Game 8 - No Prize', STICKER_URL: 'https://mysiterobert.s3.us-east-1.amazonaws.com/BEES_2026/Album2026/ESA/ESA_PilsenerStickerGame8_Non-Prize.png', PRIZE_POINTS: 0, BRAND: 'pilsener', STOCK: 999999 },
-  { ALBUM_ID: 'SV', STICKER_ID: 'mu7', STICKER_NAME: 'Michelob Ultra Game 7 - No Prize', STICKER_URL: 'https://mysiterobert.s3.us-east-1.amazonaws.com/BEES_2026/Album2026/ESA/ESA_MU+StickerGame7_Non-Prize.png', PRIZE_POINTS: 0, BRAND: 'mu', STOCK: 999999 },
-  { ALBUM_ID: 'SV', STICKER_ID: 'mu8', STICKER_NAME: 'Michelob Ultra Game 8 - No Prize', STICKER_URL: 'https://mysiterobert.s3.us-east-1.amazonaws.com/BEES_2026/Album2026/ESA/ESA_MU+StickerGame8_Non-prize.png', PRIZE_POINTS: 0, BRAND: 'mu', STOCK: 999999 }
+  { ALBUM_ID: 'SV', STICKER_ID: 'mu7', STICKER_NAME: 'Michelob Ultra Game 7 - No Prize', STICKER_URL: 'https://mysiterobert.s3.us-east-1.amazonaws.com/BEES_2026/Album2026/ESA/ESA_MU+StickerGame6_Non-Prize.png', PRIZE_POINTS: 0, BRAND: 'mu', STOCK: 999999 },
+  { ALBUM_ID: 'SV', STICKER_ID: 'mu8', STICKER_NAME: 'Michelob Ultra Game 8 - No Prize', STICKER_URL: 'https://mysiterobert.s3.us-east-1.amazonaws.com/BEES_2026/Album2026/ESA/ESA_MU+StickerGame7_Non-prize.png', PRIZE_POINTS: 0, BRAND: 'mu', STOCK: 999999 }
 ];
 
 try {

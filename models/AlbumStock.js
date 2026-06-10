@@ -4,7 +4,7 @@ const albumStockSchema = new mongoose.Schema({
   ALBUM_ID: {
     type: String,
     required: true,
-    enum: ['HN', 'GT', 'SV', 'NI', 'CR', 'PA', 'DO', 'EC', 'PY', 'BO'] // Códigos de países disponibles
+    enum: ['HN', 'GT', 'SV', 'NI', 'CR', 'PA', 'DO', 'EC', 'PY', 'BO', 'ZA'] // Códigos de países disponibles (ZA = South Africa)
   },
   STICKER_ID: {
     type: String,
@@ -26,7 +26,9 @@ const albumStockSchema = new mongoose.Schema({
   BRAND: {
     type: String,
     required: true,
-    enum: ['sv', 'mu', 'pilsener', 'other'] // sv = Salva Vida, mu = Michelob Ultra, pilsener = Pilsener
+    enum: ['sv', 'mu', 'pilsener', 'castle', 'fish', 'carling', 'all', 'other']
+    // sv = Salva Vida, mu = Michelob Ultra, pilsener = Pilsener
+    // castle = Castle Lager, fish = Flying Fish, carling = Carling Black Label, all = All Brands
   },
   IS_PRIZE: {
     type: Boolean,

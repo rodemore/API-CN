@@ -211,12 +211,47 @@ curl https://api-cn.onrender.com/api/album/stats/SV
 
 ---
 
+## 🇿🇦 Sudáfrica (ZA) - Initial Stock
+
+**ALBUM_ID:** `ZA`
+**Total Prizes:** 13,000
+**Total Stickers:** 48 (40 prize + 8 non-prize)
+**Brands:** 4 (Castle Lager, Flying Fish, Carling Black Label, All Brands)
+
+### Stock by Brand
+
+| Brand | Total Prizes | Points Range |
+|-------|--------------|--------------|
+| Castle Lager | 4,360 | 10-500 pts |
+| Flying Fish | 3,900 | 10-500 pts |
+| Carling Black Label | 4,310 | 10-500 pts |
+| All Brands | 430 | 10-500 pts |
+
+### Restore ZA Stock
+
+```bash
+# Regenerate Excel file
+node scripts/createZAAlbumExcel.js
+
+# Load to MongoDB (will delete existing ZA stock first)
+node scripts/loadAlbumStockV2.js ZA
+```
+
+**Verification:**
+```bash
+curl https://api-cn.onrender.com/api/album/stats/ZA
+# Expected: "total_prize_stock": 13000
+```
+
+---
+
 ## 📅 Last Updated
 
-**Date:** 2026-06-09
+**Date:** 2026-06-10
 **Stock Versions:**
 - Honduras (HN): v1.0 - 840 total prizes
 - El Salvador (SV): v1.0 - 3,184 total prizes
+- Sudáfrica (ZA): v1.0 - 13,000 total prizes (4 brands)
 
 ---
 

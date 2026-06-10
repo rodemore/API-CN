@@ -58,7 +58,7 @@ async function loadAlbumStock() {
 
         // Brand validation
         const brand = (row.BRAND || 'other').toLowerCase();
-        if (!['sv', 'mu', 'pilsener', 'other'].includes(brand)) {
+        if (!['sv', 'mu', 'pilsener', 'castle', 'fish', 'carling', 'all', 'other'].includes(brand)) {
           errors.push(`Marca inválida en fila: ${row.STICKER_ID} - ${brand}`);
           continue;
         }
