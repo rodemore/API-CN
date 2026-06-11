@@ -33,23 +33,31 @@ router.post('/open-pack', async (req, res) => {
       });
     }
 
-    // Step 1: Get 2 random non-prize stickers (PRIZE_POINTS = 0) without repeating
-    const noPrizeStickers = await AlbumStock.find({
-      ALBUM_ID: album_id,
-      IS_PRIZE: false,
-      PRIZE_POINTS: 0
-    });
+    // Step 1: Determine pack composition based on album
+    // ZA album: 3 prize stickers (all with prize)
+    // Other albums: 2 non-prize + 1 prize
+    const isZAAlbum = album_id === 'ZA';
+    let selectedNoPrize = [];
 
-    if (noPrizeStickers.length < 2) {
-      return res.status(400).json({
-        success: false,
-        message: 'Not enough non-prize stickers available for this album'
+    if (!isZAAlbum) {
+      // Get 2 random non-prize stickers (PRIZE_POINTS = 0) without repeating
+      const noPrizeStickers = await AlbumStock.find({
+        ALBUM_ID: album_id,
+        IS_PRIZE: false,
+        PRIZE_POINTS: 0
       });
-    }
 
-    // Randomly select 2 non-prize stickers without repetition
-    const shuffled = [...noPrizeStickers].sort(() => 0.5 - Math.random());
-    const selectedNoPrize = shuffled.slice(0, 2);
+      if (noPrizeStickers.length < 2) {
+        return res.status(400).json({
+          success: false,
+          message: 'Not enough non-prize stickers available for this album'
+        });
+      }
+
+      // Randomly select 2 non-prize stickers without repetition
+      const shuffled = [...noPrizeStickers].sort(() => 0.5 - Math.random());
+      selectedNoPrize = shuffled.slice(0, 2);
+    }
 
     // Step 2 & 3: Get ALL available prize stickers with stock
     const allPrizeStickers = await AlbumStock.find({
@@ -65,69 +73,104 @@ router.post('/open-pack', async (req, res) => {
       });
     }
 
-    // Step 3: Use weighted random selection based on available stock
-    // Calculate available stock for each prize sticker
-    const prizesWithWeights = allPrizeStickers.map(prize => ({
-      prize,
-      availableStock: prize.STOCK - prize.GANADORES
-    }));
+    // Step 3: Select prize stickers using weighted random selection
+    // For ZA: select 3 prize stickers
+    // For other albums: select 1 prize sticker
+    const numPrizeStickers = isZAAlbum ? 3 : 1;
+    const selectedPrizeStickers = [];
 
-    // Calculate total available stock (sum of all weights)
-    const totalWeight = prizesWithWeights.reduce((sum, item) => sum + item.availableStock, 0);
+    // Function to select a prize sticker with weighted probability
+    function selectWeightedPrize(availablePrizes) {
+      const prizesWithWeights = availablePrizes.map(prize => ({
+        prize,
+        availableStock: prize.STOCK - prize.GANADORES
+      }));
 
-    // Generate random number between 0 and totalWeight
-    let randomWeight = Math.random() * totalWeight;
+      const totalWeight = prizesWithWeights.reduce((sum, item) => sum + item.availableStock, 0);
+      let randomWeight = Math.random() * totalWeight;
 
-    // Select prize based on weighted probability
-    let selectedPrizeSticker = null;
-    for (const item of prizesWithWeights) {
-      randomWeight -= item.availableStock;
-      if (randomWeight <= 0) {
-        selectedPrizeSticker = item.prize;
-        break;
+      for (const item of prizesWithWeights) {
+        randomWeight -= item.availableStock;
+        if (randomWeight <= 0) {
+          return item.prize;
+        }
       }
+
+      // Fallback
+      return prizesWithWeights[prizesWithWeights.length - 1].prize;
     }
 
-    // Fallback in case of rounding errors
-    if (!selectedPrizeSticker) {
-      selectedPrizeSticker = prizesWithWeights[prizesWithWeights.length - 1].prize;
+    // Select the required number of prize stickers
+    for (let i = 0; i < numPrizeStickers; i++) {
+      const selectedPrize = selectWeightedPrize(allPrizeStickers);
+      selectedPrizeStickers.push(selectedPrize);
+      console.log(`🎲 Selected prize ${i + 1}: ${selectedPrize.STICKER_NAME} (${selectedPrize.PRIZE_POINTS}pts, Available: ${selectedPrize.STOCK - selectedPrize.GANADORES})`);
     }
 
-    console.log(`🎲 Selected prize: ${selectedPrizeSticker.STICKER_NAME} (${selectedPrizeSticker.PRIZE_POINTS}pts, Available: ${selectedPrizeSticker.STOCK - selectedPrizeSticker.GANADORES})`);
+    // For compatibility, use the first prize as the main prize
+    const selectedPrizeSticker = selectedPrizeStickers[0];
 
-    // Step 4: Compose the 3-sticker pack (2 non-prize + 1 prize)
-    const packStickers = [
-      {
-        sticker_id: selectedNoPrize[0].STICKER_ID,
-        sticker_name: selectedNoPrize[0].STICKER_NAME,
-        sticker_url: selectedNoPrize[0].STICKER_URL,
-        prize_points: 0,
-        brand: selectedNoPrize[0].BRAND,
-        is_prize: false
-      },
-      {
-        sticker_id: selectedNoPrize[1].STICKER_ID,
-        sticker_name: selectedNoPrize[1].STICKER_NAME,
-        sticker_url: selectedNoPrize[1].STICKER_URL,
-        prize_points: 0,
-        brand: selectedNoPrize[1].BRAND,
-        is_prize: false
-      },
-      {
-        sticker_id: selectedPrizeSticker.STICKER_ID,
-        sticker_name: selectedPrizeSticker.STICKER_NAME,
-        sticker_url: selectedPrizeSticker.STICKER_URL,
-        prize_points: selectedPrizeSticker.PRIZE_POINTS,
-        brand: selectedPrizeSticker.BRAND,
+    // Step 4: Compose the 3-sticker pack
+    let packStickers = [];
+
+    if (isZAAlbum) {
+      // ZA album: 3 prize stickers
+      packStickers = selectedPrizeStickers.map(prize => ({
+        sticker_id: prize.STICKER_ID,
+        sticker_name: prize.STICKER_NAME,
+        sticker_url: prize.STICKER_URL,
+        prize_points: prize.PRIZE_POINTS,
+        brand: prize.BRAND,
         is_prize: true
-      }
-    ];
+      }));
+    } else {
+      // Other albums: 2 non-prize + 1 prize
+      packStickers = [
+        {
+          sticker_id: selectedNoPrize[0].STICKER_ID,
+          sticker_name: selectedNoPrize[0].STICKER_NAME,
+          sticker_url: selectedNoPrize[0].STICKER_URL,
+          prize_points: 0,
+          brand: selectedNoPrize[0].BRAND,
+          is_prize: false
+        },
+        {
+          sticker_id: selectedNoPrize[1].STICKER_ID,
+          sticker_name: selectedNoPrize[1].STICKER_NAME,
+          sticker_url: selectedNoPrize[1].STICKER_URL,
+          prize_points: 0,
+          brand: selectedNoPrize[1].BRAND,
+          is_prize: false
+        },
+        {
+          sticker_id: selectedPrizeSticker.STICKER_ID,
+          sticker_name: selectedPrizeSticker.STICKER_NAME,
+          sticker_url: selectedPrizeSticker.STICKER_URL,
+          prize_points: selectedPrizeSticker.PRIZE_POINTS,
+          brand: selectedPrizeSticker.BRAND,
+          is_prize: true
+        }
+      ];
+    }
+
+    // Calculate total prize points
+    const total_prize_points = isZAAlbum
+      ? selectedPrizeStickers.reduce((sum, prize) => sum + prize.PRIZE_POINTS, 0)
+      : selectedPrizeSticker.PRIZE_POINTS;
 
     const remainingStock = selectedPrizeSticker.STOCK - selectedPrizeSticker.GANADORES;
 
     console.log(`🎉 Pack opened for user ${user_id} in album ${album_id}`);
-    console.log(`   Prize: ${selectedPrizeSticker.STICKER_NAME} (${selectedPrizeSticker.PRIZE_POINTS}pts)`);
-    console.log(`   Remaining stock: ${remainingStock}`);
+    if (isZAAlbum) {
+      console.log(`   Prizes (ZA - all prize pack):`);
+      selectedPrizeStickers.forEach((p, i) => {
+        console.log(`   ${i + 1}. ${p.STICKER_NAME} (${p.PRIZE_POINTS}pts)`);
+      });
+      console.log(`   Total points: ${total_prize_points}pts`);
+    } else {
+      console.log(`   Prize: ${selectedPrizeSticker.STICKER_NAME} (${selectedPrizeSticker.PRIZE_POINTS}pts)`);
+      console.log(`   Remaining stock: ${remainingStock}`);
+    }
 
     res.json({
       success: true,
@@ -136,7 +179,7 @@ router.post('/open-pack', async (req, res) => {
         album_id,
         user_id,
         pack_stickers: packStickers,
-        total_prize_points: selectedPrizeSticker.PRIZE_POINTS,
+        total_prize_points: total_prize_points,
         prize_sticker: {
           sticker_id: selectedPrizeSticker.STICKER_ID,
           sticker_name: selectedPrizeSticker.STICKER_NAME,
