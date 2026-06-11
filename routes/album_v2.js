@@ -16,7 +16,7 @@ function getRandomPrizePoints() {
 // POST /api/album/open-pack - Open a pack and receive 3 stickers
 router.post('/open-pack', async (req, res) => {
   try {
-    const { album_id, user_id } = req.body;
+    const { album_id, user_id, brand } = req.body;
 
     // Validate required fields
     if (!album_id) {
@@ -34,9 +34,10 @@ router.post('/open-pack', async (req, res) => {
     }
 
     // Step 1: Determine pack composition based on album
-    // ZA album: 3 prize stickers (all with prize)
-    // Other albums: 2 non-prize + 1 prize
-    const isZAAlbum = album_id === 'ZA';
+    // ZA album with specific brands (carling, castle, fish): 3 prize stickers (all with prize)
+    // ZA AllBrands and other albums: 2 non-prize + 1 prize
+    const isZASpecificBrand = album_id === 'ZA' && brand && ['carling', 'castle', 'fish'].includes(brand);
+    const isZAAlbum = isZASpecificBrand;
     let selectedNoPrize = [];
 
     if (!isZAAlbum) {

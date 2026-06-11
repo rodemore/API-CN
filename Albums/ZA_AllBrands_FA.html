@@ -351,7 +351,7 @@
                 viewport.innerHTML = `
                     <div class="flex flex-col items-center">
                         <div id="pack-container" class="relative cursor-pointer transition-all duration-500 ${state.termsAccepted ? 'hover:scale-105 opacity-100 grayscale-0' : 'opacity-60 grayscale cursor-not-allowed'}" onclick="startOpeningSequence(event)">
-                            <img src="https://braze-images.com/appboy/communication/assets/image_assets/images/6a19626a50ef120083d28611/original.png?1780048489" class="w-64 border-4 border-white/10 shadow-2xl ${state.termsAccepted ? 'shake-effect' : ''} text-center">
+                            <img src="https://mysiterobert.s3.us-east-1.amazonaws.com/BEES_2026/Album2026/ZA/WhatsApp+Image+2026-06-11+at+10.05.00.jpeg" class="w-64 border-4 border-white/10 shadow-2xl ${state.termsAccepted ? 'shake-effect' : ''} text-center">
                             <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
                                 <p class="${state.termsAccepted ? 'bg-white text-black' : 'bg-neutral-600 text-neutral-400'} px-5 py-2 text-2xl rotate-[-5deg] marker-effect shadow-2xl uppercase font-black tracking-tighter text-center">Open It!</p>
                             </div>
@@ -457,7 +457,8 @@
                     },
                     body: JSON.stringify({
                         album_id: ALBUM_ID,
-                        user_id: USER_ID
+                        user_id: USER_ID,
+                        brand: BRAND_FILTER
                     })
                 });
 
