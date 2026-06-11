@@ -373,13 +373,14 @@
                     <div class="w-full h-full flex flex-col items-center justify-between pt-28 pb-12">
                         <p class="text-3xl font-black uppercase tracking-tighter text-white marker-effect mb-2">Pack Opened!</p>
 
-                        <div class="w-full flex justify-center gap-3 px-4">
+                        <div class="w-full grid grid-cols-2 gap-x-4 gap-y-3 px-4 content-center">
                             ${state.tempRevealing.map((s, index) => {
+                                const isPrizeSticker = s.isPrize || index === 2;
                                 return `
-                                    <div class="relative sticker-appear"
-                                         style="animation-delay: ${index * 150}ms; transform: rotate(${index === 0 ? '-2' : (index === 1 ? '0' : '2')}deg); width: 110px;">
+                                    <div class="relative sticker-appear ${isPrizeSticker ? 'col-span-2 justify-self-center' : (index === 0 ? 'justify-self-end' : 'justify-self-start')}"
+                                         style="animation-delay: ${index * 150}ms; transform: rotate(${index === 0 ? '-1.5' : (index === 1 ? '1.5' : '0')}deg); width: 148px;">
 
-                                        <div class="aspect-square border-2 border-yellow-500 prize-sticker-glow overflow-hidden rounded-md">
+                                        <div class="aspect-square border-2 ${isPrizeSticker ? 'border-yellow-500 prize-sticker-glow' : 'border-white shadow-[0_10px_30px_rgba(0,0,0,0.9)]'} overflow-hidden rounded-md">
                                             <img src="${s.url}" class="w-full h-full object-cover">
                                         </div>
                                     </div>

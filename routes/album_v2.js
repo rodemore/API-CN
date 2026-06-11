@@ -42,11 +42,18 @@ router.post('/open-pack', async (req, res) => {
 
     if (!isZAAlbum) {
       // Get 2 random non-prize stickers (PRIZE_POINTS = 0) without repeating
-      const noPrizeStickers = await AlbumStock.find({
+      // Filter by brand if provided (for ZA albums)
+      const noPrizeQuery = {
         ALBUM_ID: album_id,
         IS_PRIZE: false,
         PRIZE_POINTS: 0
-      });
+      };
+
+      if (brand) {
+        noPrizeQuery.BRAND = brand;
+      }
+
+      const noPrizeStickers = await AlbumStock.find(noPrizeQuery);
 
       if (noPrizeStickers.length < 2) {
         return res.status(400).json({
@@ -61,11 +68,18 @@ router.post('/open-pack', async (req, res) => {
     }
 
     // Step 2 & 3: Get ALL available prize stickers with stock
-    const allPrizeStickers = await AlbumStock.find({
+    // Filter by brand if provided (for ZA albums)
+    const prizeQuery = {
       ALBUM_ID: album_id,
       IS_PRIZE: true,
       $expr: { $gt: [{ $subtract: ['$STOCK', '$GANADORES'] }, 0] }
-    });
+    };
+
+    if (brand) {
+      prizeQuery.BRAND = brand;
+    }
+
+    const allPrizeStickers = await AlbumStock.find(prizeQuery);
 
     if (allPrizeStickers.length === 0) {
       return res.status(400).json({
