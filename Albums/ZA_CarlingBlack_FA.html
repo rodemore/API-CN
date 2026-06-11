@@ -187,7 +187,7 @@
         <div id="notch" class="hidden md:block absolute top-0 left-1/2 -translate-x-1/2 w-36 h-7 bg-black rounded-b-3xl z-50 marker-effect"></div>
 
         <!-- Botón de Cerrar In-App -->
-        <button id="global-close" onclick="closeInApp(event)" class="absolute top-12 right-6 text-white/40 hover:text-white transition-colors p-2 z-[60]">
+        <button id="global-close" onclick="closeInApp(event)" aria-label="Close" class="absolute top-12 right-6 text-white/40 hover:text-white transition-colors p-2 z-[60]">
             <i data-lucide="x" class="w-8 h-8"></i>
         </button>
 
@@ -351,7 +351,7 @@
                 viewport.innerHTML = `
                     <div class="flex flex-col items-center">
                         <div id="pack-container" class="relative cursor-pointer transition-all duration-500 ${state.termsAccepted ? 'hover:scale-105 opacity-100 grayscale-0' : 'opacity-60 grayscale cursor-not-allowed'}" onclick="startOpeningSequence(event)">
-                            <img src="https://braze-images.com/appboy/communication/assets/image_assets/images/6a1961ab8712a30083578501/original.png?1780048298" class="w-64 border-4 border-white/10 shadow-2xl ${state.termsAccepted ? 'shake-effect' : ''} text-center">
+                            <img src="https://braze-images.com/appboy/communication/assets/image_assets/images/6a1961ab8712a30083578501/original.png?1780048298" alt="Carling Black Label sticker pack" class="w-64 border-4 border-white/10 shadow-2xl ${state.termsAccepted ? 'shake-effect' : ''} text-center">
                             <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
                                 <p class="${state.termsAccepted ? 'bg-white text-black' : 'bg-neutral-600 text-neutral-400'} px-5 py-2 text-2xl rotate-[-5deg] marker-effect shadow-2xl uppercase font-black tracking-tighter text-center">Open It!</p>
                             </div>
@@ -381,7 +381,7 @@
                                          style="animation-delay: ${index * 150}ms; transform: rotate(${index === 0 ? '-1.5' : (index === 1 ? '1.5' : '0')}deg); width: 148px;">
 
                                         <div class="aspect-square border-2 ${isPrizeSticker ? 'border-yellow-500 prize-sticker-glow' : 'border-white shadow-[0_10px_30px_rgba(0,0,0,0.9)]'} overflow-hidden rounded-md">
-                                            <img src="${s.url}" class="w-full h-full object-cover">
+                                            <img src="${s.url}" alt="Sticker ${isPrizeSticker ? 'with prize' : 'without prize'}" class="w-full h-full object-cover">
                                         </div>
                                     </div>
                                 `;
