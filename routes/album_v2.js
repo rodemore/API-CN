@@ -34,9 +34,9 @@ router.post('/open-pack', async (req, res) => {
     }
 
     // Step 1: Determine pack composition based on album
-    // ZA album with specific brands (carling, castle, fish): 3 prize stickers (all with prize)
-    // ZA AllBrands and other albums: 2 non-prize + 1 prize
-    const isZASpecificBrand = album_id === 'ZA' && brand && ['carling', 'castle', 'fish'].includes(brand);
+    // ZA album with specific brands (carling, castle, fish, all): 3 prize stickers (all with prize)
+    // Other albums: 2 non-prize + 1 prize
+    const isZASpecificBrand = album_id === 'ZA' && brand && ['carling', 'castle', 'fish', 'all'].includes(brand);
     const isZAAlbum = isZASpecificBrand;
     let selectedNoPrize = [];
 
