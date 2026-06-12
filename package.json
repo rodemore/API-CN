@@ -11,6 +11,7 @@
     "load-album": "node scripts/loadAlbumStock.js",
     "load-album-v2": "node scripts/loadAlbumStockV2.js",
     "load-milex": "node scripts/loadMilexStock.js",
+    "load-arg": "node scripts/createARGAlbumExcel.js && node scripts/loadARGStock.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
