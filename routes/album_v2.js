@@ -268,15 +268,24 @@ router.post('/register-winner', async (req, res) => {
     await winner.save();
 
     // Increment GANADORES counter for ALL prize stickers in the pack
-    // For ZA albums, all 3 stickers are prizes, so we need to update all of them
+    // For ZA albums, all 3 stickers are prizes, and they can be duplicated
+    // We need to count occurrences of each sticker_id
     const prizeStickersInPack = pack_stickers.filter(s => s.is_prize);
 
-    for (const sticker of prizeStickersInPack) {
+    // Count occurrences of each sticker_id
+    const stickerCounts = {};
+    prizeStickersInPack.forEach(sticker => {
+      stickerCounts[sticker.sticker_id] = (stickerCounts[sticker.sticker_id] || 0) + 1;
+    });
+
+    // Update stock for each unique sticker with its count
+    for (const [stickerId, count] of Object.entries(stickerCounts)) {
       await AlbumStock.findOneAndUpdate(
-        { ALBUM_ID: album_id, STICKER_ID: sticker.sticker_id },
-        { $inc: { GANADORES: 1 } }
+        { ALBUM_ID: album_id, STICKER_ID: stickerId },
+        { $inc: { GANADORES: count } }
       );
-      console.log(`   📊 Stock updated for ${sticker.sticker_id}: ${sticker.prize_points}pts`);
+      const sticker = prizeStickersInPack.find(s => s.sticker_id === stickerId);
+      console.log(`   📊 Stock updated for ${stickerId}: ${sticker.prize_points}pts (x${count})`);
     }
 
     console.log(`✅ Winner registered: ${user_id} won ${total_prize_points}pts in album ${album_id}`);
