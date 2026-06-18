@@ -267,11 +267,17 @@ router.post('/register-winner', async (req, res) => {
 
     await winner.save();
 
-    // Increment GANADORES counter for the prize sticker
-    await AlbumStock.findOneAndUpdate(
-      { ALBUM_ID: album_id, STICKER_ID: prize_sticker.sticker_id },
-      { $inc: { GANADORES: 1 } }
-    );
+    // Increment GANADORES counter for ALL prize stickers in the pack
+    // For ZA albums, all 3 stickers are prizes, so we need to update all of them
+    const prizeStickersInPack = pack_stickers.filter(s => s.is_prize);
+
+    for (const sticker of prizeStickersInPack) {
+      await AlbumStock.findOneAndUpdate(
+        { ALBUM_ID: album_id, STICKER_ID: sticker.sticker_id },
+        { $inc: { GANADORES: 1 } }
+      );
+      console.log(`   📊 Stock updated for ${sticker.sticker_id}: ${sticker.prize_points}pts`);
+    }
 
     console.log(`✅ Winner registered: ${user_id} won ${total_prize_points}pts in album ${album_id}`);
 
@@ -375,6 +381,33 @@ router.get('/stats/:album_id', async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Error al obtener estadísticas',
+      error: error.message
+    });
+  }
+});
+
+// GET /api/album/all-stickers - Get ALL stickers from ALL albums
+router.get('/all-stickers', async (req, res) => {
+  try {
+    const stickers = await AlbumStock.find({}).sort({ ALBUM_ID: 1, BRAND: 1, IS_PRIZE: -1, PRIZE_POINTS: -1 });
+
+    res.json(stickers.map(s => ({
+      ALBUM_ID: s.ALBUM_ID,
+      STICKER_ID: s.STICKER_ID,
+      STICKER_NAME: s.STICKER_NAME,
+      STICKER_URL: s.STICKER_URL,
+      PRIZE_POINTS: s.PRIZE_POINTS,
+      BRAND: s.BRAND,
+      IS_PRIZE: s.IS_PRIZE,
+      STOCK: s.STOCK,
+      GANADORES: s.GANADORES
+    })));
+
+  } catch (error) {
+    console.error('Error getting all stickers:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error al obtener todos los stickers',
       error: error.message
     });
   }
