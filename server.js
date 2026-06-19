@@ -8,6 +8,7 @@ const dominoRoutes = require('./routes/domino');
 const albumRoutes = require('./routes/album_v2'); // New album system with pack opening
 const milexRoutes = require('./routes/roulette_milex');
 const matchRoutes = require('./routes/match');
+const surveyRoutes = require('./routes/survey');
 
 const app = express();
 
@@ -44,7 +45,10 @@ app.get('/', (req, res) => {
       milexSpin: '/api/milex/spin - Lanzar la ruleta Milex',
       milexWinner: '/api/milex/winner - Registrar ganador de Milex',
       milexStats: '/api/milex/stats - Obtener estadísticas de Milex',
-      milexDownload: '/api/milex/winners/download - Descargar ganadores de Milex en Excel'
+      milexDownload: '/api/milex/winners/download - Descargar ganadores de Milex en Excel',
+      surveyResponse: '/api/survey/response - Guardar respuesta de survey',
+      surveyStats: '/api/survey/stats - Obtener estadísticas de survey',
+      surveyDownload: '/api/survey/download - Descargar respuestas de survey en Excel'
     }
   });
 });
@@ -89,6 +93,7 @@ app.use('/api/domino', dominoRoutes);
 app.use('/api/album', albumRoutes);
 app.use('/api/milex', milexRoutes);
 app.use('/api/match', matchRoutes);
+app.use('/api/survey', surveyRoutes);
 
 // Manejo de rutas no encontradas
 app.use((req, res) => {
