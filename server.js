@@ -9,6 +9,7 @@ const albumRoutes = require('./routes/album_v2'); // New album system with pack 
 const milexRoutes = require('./routes/roulette_milex');
 const matchRoutes = require('./routes/match');
 const surveyRoutes = require('./routes/survey');
+const termsRoutes = require('./routes/terms');
 
 const app = express();
 
@@ -48,7 +49,11 @@ app.get('/', (req, res) => {
       milexDownload: '/api/milex/winners/download - Descargar ganadores de Milex en Excel',
       surveyResponse: '/api/survey/response - Guardar respuesta de survey',
       surveyStats: '/api/survey/stats - Obtener estadísticas de survey',
-      surveyDownload: '/api/survey/download - Descargar respuestas de survey en Excel'
+      surveyDownload: '/api/survey/download - Descargar respuestas de survey en Excel',
+      termsAccept: '/api/terms - Registrar aceptación de términos y condiciones',
+      termsGetAll: '/api/terms - Obtener todas las aceptaciones de términos',
+      termsDownload: '/api/terms/download - Descargar aceptaciones de términos en Excel',
+      termsByUser: '/api/terms/user/:userid - Obtener aceptaciones por usuario'
     }
   });
 });
@@ -94,6 +99,7 @@ app.use('/api/album', albumRoutes);
 app.use('/api/milex', milexRoutes);
 app.use('/api/match', matchRoutes);
 app.use('/api/survey', surveyRoutes);
+app.use('/api/terms', termsRoutes);
 
 // Manejo de rutas no encontradas
 app.use((req, res) => {
