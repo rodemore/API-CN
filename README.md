@@ -231,6 +231,121 @@ API/
 └── package.json             # Dependencias
 ```
 
+## Sistema Cyber (Nueva Ruleta)
+
+El sistema Cyber es un tercer sistema de ruleta independiente con premios de alto valor y probabilidad muy baja.
+
+### Características
+
+- **ID_RULETA:** 3
+- **Probabilidad de ganar:** 0.21% (0.002064)
+- **Premios totales:** 516 unidades
+- **Jugadas estimadas:** 250,000
+- **Premios disponibles:**
+  - TV (8 unidades)
+  - Celular (8 unidades)
+  - 5000 puntos (500 unidades)
+
+### Cargar Stock Cyber
+
+```bash
+npm run load-cyber
+```
+
+Este comando carga los premios desde `Files/PremiosCyber.xlsx` con `ID_RULETA: 3`.
+
+### Endpoints Cyber
+
+#### POST /api/cyber/spin
+
+Lanza la ruleta cyber para determinar si el usuario gana un premio.
+
+**Body:**
+```json
+{
+  "roulette_id": 3
+}
+```
+
+**Respuesta (ganador):**
+```json
+{
+  "success": true,
+  "winner": true,
+  "message": "TV",
+  "prize": {
+    "id": 201,
+    "name": "TV",
+    "roulette_id": 3,
+    "remainingStock": 7
+  }
+}
+```
+
+**Respuesta (no ganador):**
+```json
+{
+  "success": true,
+  "winner": false,
+  "message": "sigue_participando"
+}
+```
+
+#### POST /api/cyber/winner
+
+Registra un ganador o participante del sistema Cyber.
+
+**Body:**
+```json
+{
+  "user_id": "user123",
+  "prize": "TV",
+  "prize_id": 201,
+  "roulette_id": 3,
+  "is_winner": true
+}
+```
+
+#### GET /api/cyber/stats
+
+Obtiene estadísticas del sistema Cyber.
+
+**Respuesta:**
+```json
+{
+  "success": true,
+  "winProbability": "0.2064%",
+  "totalWinners": 10,
+  "totalPrizes": 516,
+  "estimatedPlays": 250000,
+  "prizes": [
+    {
+      "id": 201,
+      "name": "TV",
+      "totalStock": 8,
+      "winners": 2,
+      "available": 6
+    }
+  ]
+}
+```
+
+#### GET /api/cyber/winners/download
+
+Descarga todos los ganadores del sistema Cyber en formato Excel (.xlsx).
+
+El archivo se descargará con el nombre: `ganadores_cyber_YYYYMMDD_HHMM.xlsx`
+
+### Configuración de Probabilidad
+
+En el archivo `.env`:
+
+```
+CYBER_PROBABILITY=0.002064
+```
+
+Esta probabilidad se calculó dividiendo el total de premios (516) entre las jugadas estimadas (250,000), resultando en aproximadamente 0.21% de probabilidad de ganar.
+
 ## Próximos pasos
 
 - [ ] Agregar modelos para Spins/Tiradas

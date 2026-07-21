@@ -5,6 +5,7 @@ const connectDB = require('./config/database');
 const stockRoutes = require('./routes/stock');
 const rouletteRoutes = require('./routes/roulette');
 const dominoRoutes = require('./routes/domino');
+const cyberRoutes = require('./routes/cyber');
 const albumRoutes = require('./routes/album_v2'); // New album system with pack opening
 const milexRoutes = require('./routes/roulette_milex');
 const matchRoutes = require('./routes/match');
@@ -38,6 +39,10 @@ app.get('/', (req, res) => {
       dominoWinner: '/api/domino/winner - Registrar ganador de dominó',
       dominoStats: '/api/domino/stats - Obtener estadísticas de dominó',
       dominoDownload: '/api/domino/winners/download - Descargar ganadores de dominó en Excel',
+      cyberSpin: '/api/cyber/spin - Lanzar la ruleta Cyber',
+      cyberWinner: '/api/cyber/winner - Registrar ganador de Cyber',
+      cyberStats: '/api/cyber/stats - Obtener estadísticas de Cyber',
+      cyberDownload: '/api/cyber/winners/download - Descargar ganadores de Cyber en Excel',
       albumOpenPack: '/api/album/open-pack - Abrir pack de álbum (3 stickers)',
       albumRegisterWinner: '/api/album/register-winner - Registrar pack abierto y ganador',
       albumStats: '/api/album/stats/:album_id - Obtener estadísticas de un álbum específico',
@@ -95,6 +100,7 @@ app.get('/health', async (req, res) => {
 app.use('/api/stock', stockRoutes);
 app.use('/api/roulette', rouletteRoutes);
 app.use('/api/domino', dominoRoutes);
+app.use('/api/cyber', cyberRoutes);
 app.use('/api/album', albumRoutes);
 app.use('/api/milex', milexRoutes);
 app.use('/api/match', matchRoutes);
@@ -118,11 +124,13 @@ app.listen(PORT, HOST, () => {
   console.log(`📦 Stock endpoint: /api/stock`);
   console.log(`🎰 Roulette endpoint: /api/roulette`);
   console.log(`🎲 Domino endpoint: /api/domino`);
+  console.log(`💻 Cyber endpoint: /api/cyber`);
   console.log(`📖 Album endpoint: /api/album`);
   console.log(`🏥 Milex endpoint: /api/milex`);
   console.log(`💚 Health check: /health`);
   console.log(`📥 Download winners: /api/roulette/winners/download`);
   console.log(`📥 Download domino winners: /api/domino/winners/download`);
+  console.log(`📥 Download cyber winners: /api/cyber/winners/download`);
   console.log(`📥 Download album winners: /api/album/winners/download`);
   console.log(`📥 Download milex winners: /api/milex/winners/download`);
   console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
