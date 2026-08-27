@@ -3,5 +3,6 @@ module.exports = {
   domino_probability: parseFloat(process.env.DOMINO_PROBABILITY) || 0.45, // 45% probability for domino
   album_probability: parseFloat(process.env.ALBUM_PROBABILITY) || 1.0, // 100% probability for album (always wins)
   milex_probability: parseFloat(process.env.MILEX_PROBABILITY) || 0.60, // 60% probability for milex
-  cyber_probability: parseFloat(process.env.CYBER_PROBABILITY) || 0.002064 // 0.21% probability for cyber (516 prizes / 250k plays)
+  cyber_probability: parseFloat(process.env.CYBER_PROBABILITY) || 0.002064, // 0.21% probability for cyber (516 prizes / 250k plays)
+  py_probability: parseFloat(process.env.PY_PROBABILITY) || 0.80 // 80% probability for RuletaPY (11,600 prizes / 7,000 players)
 };

@@ -8,6 +8,7 @@ const dominoRoutes = require('./routes/domino');
 const cyberRoutes = require('./routes/cyber');
 const albumRoutes = require('./routes/album_v2'); // New album system with pack opening
 const milexRoutes = require('./routes/roulette_milex');
+const ruletaPYRoutes = require('./routes/ruletaPY');
 const matchRoutes = require('./routes/match');
 const surveyRoutes = require('./routes/survey');
 const termsRoutes = require('./routes/terms');
@@ -52,6 +53,10 @@ app.get('/', (req, res) => {
       milexWinner: '/api/milex/winner - Registrar ganador de Milex',
       milexStats: '/api/milex/stats - Obtener estadísticas de Milex',
       milexDownload: '/api/milex/winners/download - Descargar ganadores de Milex en Excel',
+      ruletaPYSpin: '/api/ruletapy/spin - Lanzar la RuletaPY',
+      ruletaPYWinner: '/api/ruletapy/winner - Registrar ganador de RuletaPY',
+      ruletaPYStats: '/api/ruletapy/stats - Obtener estadísticas de RuletaPY',
+      ruletaPYDownload: '/api/ruletapy/winners/download - Descargar ganadores de RuletaPY en Excel',
       surveyResponse: '/api/survey/response - Guardar respuesta de survey',
       surveyStats: '/api/survey/stats - Obtener estadísticas de survey',
       surveyDownload: '/api/survey/download - Descargar respuestas de survey en Excel',
@@ -103,6 +108,7 @@ app.use('/api/domino', dominoRoutes);
 app.use('/api/cyber', cyberRoutes);
 app.use('/api/album', albumRoutes);
 app.use('/api/milex', milexRoutes);
+app.use('/api/ruletapy', ruletaPYRoutes);
 app.use('/api/match', matchRoutes);
 app.use('/api/survey', surveyRoutes);
 app.use('/api/terms', termsRoutes);
@@ -127,12 +133,14 @@ app.listen(PORT, HOST, () => {
   console.log(`💻 Cyber endpoint: /api/cyber`);
   console.log(`📖 Album endpoint: /api/album`);
   console.log(`🏥 Milex endpoint: /api/milex`);
+  console.log(`🇵🇾 RuletaPY endpoint: /api/ruletapy`);
   console.log(`💚 Health check: /health`);
   console.log(`📥 Download winners: /api/roulette/winners/download`);
   console.log(`📥 Download domino winners: /api/domino/winners/download`);
   console.log(`📥 Download cyber winners: /api/cyber/winners/download`);
   console.log(`📥 Download album winners: /api/album/winners/download`);
   console.log(`📥 Download milex winners: /api/milex/winners/download`);
+  console.log(`📥 Download RuletaPY winners: /api/ruletapy/winners/download`);
   console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
 });
 
