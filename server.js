@@ -12,6 +12,7 @@ const ruletaPYRoutes = require('./routes/ruletaPY');
 const matchRoutes = require('./routes/match');
 const surveyRoutes = require('./routes/survey');
 const termsRoutes = require('./routes/terms');
+const ruletaPepRoutes = require('./routes/ruleta_pep');
 
 const app = express();
 
@@ -63,7 +64,11 @@ app.get('/', (req, res) => {
       termsAccept: '/api/terms - Registrar aceptación de términos y condiciones',
       termsGetAll: '/api/terms - Obtener todas las aceptaciones de términos',
       termsDownload: '/api/terms/download - Descargar aceptaciones de términos en Excel',
-      termsByUser: '/api/terms/user/:userid - Obtener aceptaciones por usuario'
+      termsByUser: '/api/terms/user/:userid - Obtener aceptaciones por usuario',
+      ruletaPepSpin: '/api/ruleta_pep/spin - Lanzar la Ruleta Pepsico (time-window based)',
+      ruletaPepWinner: '/api/ruleta_pep/winner - Registrar ganador de Ruleta Pepsico',
+      ruletaPepStats: '/api/ruleta_pep/stats - Obtener estadísticas de Ruleta Pepsico',
+      ruletaPepDownload: '/api/ruleta_pep/winners/download - Descargar participantes de Ruleta Pepsico en Excel'
     }
   });
 });
@@ -112,6 +117,7 @@ app.use('/api/ruletapy', ruletaPYRoutes);
 app.use('/api/match', matchRoutes);
 app.use('/api/survey', surveyRoutes);
 app.use('/api/terms', termsRoutes);
+app.use('/api/ruleta_pep', ruletaPepRoutes);
 
 // Manejo de rutas no encontradas
 app.use((req, res) => {
@@ -141,6 +147,8 @@ app.listen(PORT, HOST, () => {
   console.log(`📥 Download album winners: /api/album/winners/download`);
   console.log(`📥 Download milex winners: /api/milex/winners/download`);
   console.log(`📥 Download RuletaPY winners: /api/ruletapy/winners/download`);
+  console.log(`🥤 RuletaPep endpoint: /api/ruleta_pep`);
+  console.log(`📥 Download RuletaPep participants: /api/ruleta_pep/winners/download`);
   console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
 });
 

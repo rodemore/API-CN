@@ -15,6 +15,7 @@
     "load-py": "node scripts/loadPYStock.js",
     "load-arg": "node scripts/createARGAlbumExcel.js && node scripts/loadARGStock.js",
     "load-arg-all": "node scripts/createARGAlbumExcel.js && node scripts/addQuilmesStickers.js && node scripts/loadARGStock.js",
+    "load-pepsico": "node scripts/loadPepsicoStock.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
