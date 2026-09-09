@@ -13,6 +13,7 @@ const matchRoutes = require('./routes/match');
 const surveyRoutes = require('./routes/survey');
 const termsRoutes = require('./routes/terms');
 const ruletaPepRoutes = require('./routes/ruleta_pep');
+const jackpotRoutes = require('./routes/jackpot');
 
 const app = express();
 
@@ -68,7 +69,11 @@ app.get('/', (req, res) => {
       ruletaPepSpin: '/api/ruleta_pep/spin - Lanzar la Ruleta Pepsico (time-window based)',
       ruletaPepWinner: '/api/ruleta_pep/winner - Registrar ganador de Ruleta Pepsico',
       ruletaPepStats: '/api/ruleta_pep/stats - Obtener estadísticas de Ruleta Pepsico',
-      ruletaPepDownload: '/api/ruleta_pep/winners/download - Descargar participantes de Ruleta Pepsico en Excel'
+      ruletaPepDownload: '/api/ruleta_pep/winners/download - Descargar participantes de Ruleta Pepsico en Excel',
+      jackpotSpin: '/api/jackpot/spin - Lanzar el Jackpot (individual prize probabilities)',
+      jackpotWinner: '/api/jackpot/winner - Registrar ganador de Jackpot',
+      jackpotStats: '/api/jackpot/stats - Obtener estadísticas de Jackpot',
+      jackpotDownload: '/api/jackpot/winners/download - Descargar participantes de Jackpot en Excel'
     }
   });
 });
@@ -118,6 +123,7 @@ app.use('/api/match', matchRoutes);
 app.use('/api/survey', surveyRoutes);
 app.use('/api/terms', termsRoutes);
 app.use('/api/ruleta_pep', ruletaPepRoutes);
+app.use('/api/jackpot', jackpotRoutes);
 
 // Manejo de rutas no encontradas
 app.use((req, res) => {
@@ -149,6 +155,8 @@ app.listen(PORT, HOST, () => {
   console.log(`📥 Download RuletaPY winners: /api/ruletapy/winners/download`);
   console.log(`🥤 RuletaPep endpoint: /api/ruleta_pep`);
   console.log(`📥 Download RuletaPep participants: /api/ruleta_pep/winners/download`);
+  console.log(`🎰 Jackpot endpoint: /api/jackpot`);
+  console.log(`📥 Download Jackpot participants: /api/jackpot/winners/download`);
   console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
 });
 
