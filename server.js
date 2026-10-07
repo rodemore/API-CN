@@ -15,6 +15,7 @@ const termsRoutes = require('./routes/terms');
 const ruletaPepRoutes = require('./routes/ruleta_pep');
 const ruletaNestleRoutes = require('./routes/ruleta_nestle');
 const jackpotRoutes = require('./routes/jackpot');
+const ruletaRRoutes = require('./routes/ruletaR');
 
 const app = express();
 
@@ -78,7 +79,13 @@ app.get('/', (req, res) => {
       jackpotSpin: '/api/jackpot/spin - Lanzar el Jackpot (individual prize probabilities)',
       jackpotWinner: '/api/jackpot/winner - Registrar ganador de Jackpot',
       jackpotStats: '/api/jackpot/stats - Obtener estadísticas de Jackpot',
-      jackpotDownload: '/api/jackpot/winners/download - Descargar participantes de Jackpot en Excel'
+      jackpotDownload: '/api/jackpot/winners/download - Descargar participantes de Jackpot en Excel',
+      ruletaRSpin: '/api/ruletaR/spin - Lanzar la RuletaR (50% probability)',
+      ruletaRWinner: '/api/ruletaR/winner - Registrar ganador de RuletaR',
+      ruletaRStats: '/api/ruletaR/stats - Obtener estadísticas de RuletaR',
+      ruletaRDownload: '/api/ruletaR/winners/download - Descargar ganadores de RuletaR en Excel',
+      ruletaRTerms: '/api/ruletaR/terms - Aceptar términos y condiciones de RuletaR',
+      ruletaRTermsDownload: '/api/ruletaR/terms/download - Descargar aceptaciones de términos de RuletaR en Excel'
     }
   });
 });
@@ -130,6 +137,7 @@ app.use('/api/terms', termsRoutes);
 app.use('/api/ruleta_pep', ruletaPepRoutes);
 app.use('/api/ruleta_nestle', ruletaNestleRoutes);
 app.use('/api/jackpot', jackpotRoutes);
+app.use('/api/ruletaR', ruletaRRoutes);
 
 // Manejo de rutas no encontradas
 app.use((req, res) => {
@@ -165,6 +173,9 @@ app.listen(PORT, HOST, () => {
   console.log(`📥 Download RuletaNestle participants: /api/ruleta_nestle/winners/download`);
   console.log(`🎰 Jackpot endpoint: /api/jackpot`);
   console.log(`📥 Download Jackpot participants: /api/jackpot/winners/download`);
+  console.log(`🎯 RuletaR endpoint: /api/ruletaR`);
+  console.log(`📥 Download RuletaR winners: /api/ruletaR/winners/download`);
+  console.log(`📝 Download RuletaR terms: /api/ruletaR/terms/download`);
   console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
 });
 

@@ -18,6 +18,7 @@
     "load-pepsico": "node scripts/loadPepsicoStock.js",
     "load-nestle": "node scripts/loadNestleStock.js",
     "load-jackpot": "node scripts/loadJackpotStock.js",
+    "load-ruletaR": "node scripts/loadRuletaRStock.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
