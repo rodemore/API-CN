@@ -366,11 +366,13 @@ router.get('/stats', async (req, res) => {
 // GET /api/ruletaR/winners/download - Download RuletaR winners as Excel
 router.get('/winners/download', async (req, res) => {
   try {
-    // Fetch only RuletaR winners (prize_id 301-309, is_winner: true), sorted by creation date (newest first)
+    // Fetch all RuletaR participants (winners and losers) from October 9, 2026 onwards
+    // From this date, only RuletaR was active with roulette_id: 3
+    const cutoffDate = new Date('2026-10-09T00:00:00.000-05:00'); // October 9, 2026 midnight Ecuador time
+
     const winners = await Winner.find({
       roulette_id: 3,
-      prize_id: { $gte: 301, $lte: 309 },
-      is_winner: true
+      createdAt: { $gte: cutoffDate }
     }).sort({ createdAt: -1 });
 
     if (winners.length === 0) {
