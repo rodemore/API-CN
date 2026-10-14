@@ -366,8 +366,12 @@ router.get('/stats', async (req, res) => {
 // GET /api/ruletaR/winners/download - Download RuletaR winners as Excel
 router.get('/winners/download', async (req, res) => {
   try {
-    // Fetch all RuletaR winners from database (ID_RULETA: 3), sorted by creation date (newest first)
-    const winners = await Winner.find({ roulette_id: 3 }).sort({ createdAt: -1 });
+    // Fetch only RuletaR winners (prize_id 301-309, is_winner: true), sorted by creation date (newest first)
+    const winners = await Winner.find({
+      roulette_id: 3,
+      prize_id: { $gte: 301, $lte: 309 },
+      is_winner: true
+    }).sort({ createdAt: -1 });
 
     if (winners.length === 0) {
       return res.status(404).json({
