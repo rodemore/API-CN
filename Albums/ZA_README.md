@@ -53,7 +53,7 @@ El álbum ZA tiene **4 versiones** basadas en marcas:
 | 200 | 30 | 6,000 |
 | 250 | 12 | 3,000 |
 | 500 | 3 | 1,500 |
-| **Total** | **4,310** | **130,750** |
+| **Total** | **4,310** | **129,750** |
 
 ### 4. All Brands / Collection (430 premios)
 | Puntos | Qty | Total Allocation |
