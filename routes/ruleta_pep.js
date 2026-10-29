@@ -36,7 +36,7 @@ router.post('/spin', async (req, res) => {
 
     // Generate random number between 0 and 1
     const random = Math.random();
-    const WIN_PROBABILITY = 0.20; // 20% = 1 in 5 players
+    const WIN_PROBABILITY = 0.80; // 80% win probability
 
     console.log(`🎲 Generated probability: ${(random * 100).toFixed(2)}%`);
     console.log(`🎯 Win probability: ${(WIN_PROBABILITY * 100).toFixed(2)}%`);
@@ -261,8 +261,8 @@ router.get('/stats', async (req, res) => {
 
     res.json({
       success: true,
-      system: 'Probability Based (20% win rate)',
-      winProbability: '20%',
+      system: 'Probability Based (80% win rate)',
+      winProbability: '80%',
       currentTime: now.toISOString(),
       totalPrizes,
       claimedPrizes,
