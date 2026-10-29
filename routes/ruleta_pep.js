@@ -4,7 +4,7 @@ const XLSX = require('xlsx');
 const TimeWindowPrize = require('../models/TimeWindowPrize');
 const PepsicoWinner = require('../models/PepsicoWinner');
 
-// POST /api/ruleta_pep/spin - Spin based on time windows
+// POST /api/ruleta_pep/spin - Spin with 20% win probability
 router.post('/spin', async (req, res) => {
   try {
     const { user_id } = req.body;
@@ -20,15 +20,13 @@ router.post('/spin', async (req, res) => {
     const now = new Date();
     console.log(`🎲 User ${user_id} spinning at ${now.toISOString()}`);
 
-    // Find all unclaimed prizes where draw_datetime <= now
-    // Sort by draw_datetime ascending (oldest first)
+    // First, check if there are any unclaimed prizes available
     const availablePrizes = await TimeWindowPrize.find({
-      draw_datetime: { $lte: now },
       is_claimed: false
     }).sort({ draw_datetime: 1 });
 
     if (availablePrizes.length === 0) {
-      console.log(`❌ No available prizes for ${user_id}`);
+      console.log(`❌ No available prizes - stock exhausted`);
       return res.json({
         success: true,
         winner: false,
@@ -36,10 +34,69 @@ router.post('/spin', async (req, res) => {
       });
     }
 
-    // The user wins the FIRST (oldest) available prize
-    const wonPrize = availablePrizes[0];
+    // Generate random number between 0 and 1
+    const random = Math.random();
+    const WIN_PROBABILITY = 0.20; // 20% = 1 in 5 players
 
-    console.log(`🎉 Prize won by ${user_id}: ${wonPrize.prize_name} (draw time: ${wonPrize.draw_datetime.toISOString()})`);
+    console.log(`🎲 Generated probability: ${(random * 100).toFixed(2)}%`);
+    console.log(`🎯 Win probability: ${(WIN_PROBABILITY * 100).toFixed(2)}%`);
+    console.log(`📊 Available prizes: ${availablePrizes.length}`);
+
+    // Check if wins according to probability
+    if (random > WIN_PROBABILITY) {
+      // Didn't win
+      console.log(`❌ ${user_id} did not win this time`);
+      return res.json({
+        success: true,
+        winner: false,
+        message: 'No ganaste esta vez. ¡Sigue intentando!'
+      });
+    }
+
+    // Won! Select a random prize from available prizes using weighted selection
+    // Group prizes by name to calculate weights
+    const prizeGroups = {};
+    availablePrizes.forEach(prize => {
+      if (!prizeGroups[prize.prize_name]) {
+        prizeGroups[prize.prize_name] = [];
+      }
+      prizeGroups[prize.prize_name].push(prize);
+    });
+
+    // Calculate weights based on quantity of each prize type
+    const prizesWithWeights = [];
+    for (const [prizeName, prizes] of Object.entries(prizeGroups)) {
+      prizesWithWeights.push({
+        prizeName,
+        prizes,
+        weight: prizes.length
+      });
+    }
+
+    // Calculate total weight
+    const totalWeight = prizesWithWeights.reduce((sum, item) => sum + item.weight, 0);
+
+    // Select prize type based on weighted probability
+    let randomWeight = Math.random() * totalWeight;
+    let selectedPrizeGroup = null;
+
+    for (const item of prizesWithWeights) {
+      randomWeight -= item.weight;
+      if (randomWeight <= 0) {
+        selectedPrizeGroup = item;
+        break;
+      }
+    }
+
+    // Fallback in case of rounding errors
+    if (!selectedPrizeGroup) {
+      selectedPrizeGroup = prizesWithWeights[prizesWithWeights.length - 1];
+    }
+
+    // Select the first (oldest) prize from the selected group
+    const wonPrize = selectedPrizeGroup.prizes[0];
+
+    console.log(`🎉 Prize won by ${user_id}: ${wonPrize.prize_name}`);
     console.log(`📊 Remaining unclaimed prizes: ${availablePrizes.length - 1}`);
 
     res.json({
@@ -58,7 +115,7 @@ router.post('/spin', async (req, res) => {
     console.error('Error in ruleta_pep spin:', error);
     res.status(500).json({
       success: false,
-      message: 'Error al lanzar la ruleta',
+      message: 'Error al girar la ruleta',
       error: error.message
     });
   }
@@ -164,15 +221,9 @@ router.get('/stats', async (req, res) => {
     // Get claimed prizes count
     const claimedPrizes = await TimeWindowPrize.countDocuments({ is_claimed: true });
 
-    // Get available prizes (draw_datetime <= now and not claimed)
+    // Get available prizes (not claimed)
     const availablePrizes = await TimeWindowPrize.countDocuments({
-      draw_datetime: { $lte: now },
       is_claimed: false
-    });
-
-    // Get future prizes (draw_datetime > now)
-    const futurePrizes = await TimeWindowPrize.countDocuments({
-      draw_datetime: { $gt: now }
     });
 
     // Get total winners
@@ -210,12 +261,12 @@ router.get('/stats', async (req, res) => {
 
     res.json({
       success: true,
-      system: 'Time Window Based (First Come, First Served)',
+      system: 'Probability Based (20% win rate)',
+      winProbability: '20%',
       currentTime: now.toISOString(),
       totalPrizes,
       claimedPrizes,
       availablePrizes,
-      futurePrizes,
       totalWinners,
       totalParticipants: totalWinners + totalLosers,
       dateRange: {
